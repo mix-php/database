@@ -8,7 +8,7 @@ use Mix\Core\Component;
  * BasePdo组件
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class BasePDOConnection extends Component
+class BasePDOConnection extends Component implements PDOConnectionInterface
 {
 
     // 数据源格式
@@ -273,6 +273,26 @@ class BasePDOConnection extends Component
         return $this->_pdoStatement->rowCount();
     }
 
+    // 返回原生SQL语句
+    public function getRawSql()
+    {
+        $sqlPrepareData = $this->_sqlPrepareData;
+        if (count($sqlPrepareData) > 1) {
+            list($sql, $params, $values) = $sqlPrepareData;
+            $values = self::quotes($values);
+            $params = self::quotes($params);
+            // 先处理 values，避免 params 中包含 ? 号污染结果
+            $sql = vsprintf(str_replace('?', '%s', $sql), $values);
+            // 处理 params
+            foreach ($params as $key => $value) {
+                $key = substr($key, 0, 1) == ':' ? $key : ":{$key}";
+                $sql = str_replace($key, $value, $sql);
+            }
+            return $sql;
+        }
+        return array_shift($sqlPrepareData);
+    }
+
     // 插入
     public function insert($table, $data)
     {
@@ -395,26 +415,6 @@ class BasePDOConnection extends Component
             return $var;
         }
         return is_string($var) ? "'{$var}'" : $var;
-    }
-
-    // 返回原生SQL语句
-    public function getRawSql()
-    {
-        $sqlPrepareData = $this->_sqlPrepareData;
-        if (count($sqlPrepareData) > 1) {
-            list($sql, $params, $values) = $sqlPrepareData;
-            $values = self::quotes($values);
-            $params = self::quotes($params);
-            // 先处理 values，避免 params 中包含 ? 号污染结果
-            $sql = vsprintf(str_replace('?', '%s', $sql), $values);
-            // 处理 params
-            foreach ($params as $key => $value) {
-                $key = substr($key, 0, 1) == ':' ? $key : ":{$key}";
-                $sql = str_replace($key, $value, $sql);
-            }
-            return $sql;
-        }
-        return array_shift($sqlPrepareData);
     }
 
 }
