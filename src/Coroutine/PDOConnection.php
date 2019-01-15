@@ -13,7 +13,7 @@ class PDOConnection extends \Mix\Database\Persistent\PDOConnection
 
     /**
      * 连接池
-     * @var \Mix\Pool\ConnectionPool
+     * @var \Mix\Pool\ConnectionPoolInterface
      */
     public $connectionPool;
 
