@@ -14,7 +14,7 @@ class ConnectionPool extends \Mix\Pool\ConnectionPool implements ConnectionPoolI
 
     /**
      * 获取连接
-     * @return PDOConnection
+     * @return \Mix\Database\Coroutine\PDOConnection
      */
     public function getConnection()
     {
