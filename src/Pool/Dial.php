@@ -5,16 +5,16 @@ namespace Mix\Database\Pool;
 use Mix\Pool\DialInterface;
 
 /**
- * Class PDOConnectionDial
+ * Class Dial
  * @author LIUJIAN <coder.keda@gmail.com>
- * @package Mix\Database\Coroutine
+ * @package Mix\Database\Pool
  */
 class Dial implements DialInterface
 {
 
     /**
-     * 拨号
-     * @return PDOConnection
+     * 处理
+     * @return \Mix\Database\Coroutine\PDOConnection
      */
     public function handle()
     {

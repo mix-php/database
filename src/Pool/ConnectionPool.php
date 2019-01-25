@@ -7,7 +7,7 @@ use \Mix\Pool\ConnectionPoolInterface;
 /**
  * Class ConnectionPool
  * @author LIUJIAN <coder.keda@gmail.com>
- * @package Mix\Database\Coroutine
+ * @package Mix\Database\Pool
  */
 class ConnectionPool extends \Mix\Pool\ConnectionPool implements ConnectionPoolInterface
 {
