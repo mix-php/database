@@ -9,10 +9,10 @@ namespace Mix\Database;
 class PDOConnection extends BasePDOConnection
 {
 
-    // 请求后置事件
-    public function onAfterRequest()
+    // 后置处理事件
+    public function onAfterInitialize()
     {
-        parent::onAfterRequest();
+        parent::onAfterInitialize();
         // 关闭连接
         $this->disconnect();
     }
