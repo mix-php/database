@@ -35,4 +35,10 @@ class PDOConnection extends \Mix\Database\Persistent\PDOConnection
         }
     }
 
+    // 丢弃连接
+    public function discard()
+    {
+        $this->connectionPool = null;
+    }
+
 }
