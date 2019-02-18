@@ -2,7 +2,7 @@
 
 namespace Mix\Database\Coroutine;
 
-use Mix\Core\Coroutine;
+use Mix\Core\Coroutine\Coroutine;
 
 /**
  * PDOCoroutine组件
