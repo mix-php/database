@@ -6,7 +6,7 @@ namespace Mix\Database;
  * Pdo组件
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class PDOConnection extends BasePDOConnection
+class PDOConnection extends \Mix\Database\Base\PDOConnection
 {
 
     // 后置处理事件
