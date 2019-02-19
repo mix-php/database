@@ -6,8 +6,8 @@ use Mix\Pool\DialInterface;
 
 /**
  * Class Dial
- * @author LIUJIAN <coder.keda@gmail.com>
  * @package Mix\Database\Pool
+ * @author LIUJIAN <coder.keda@gmail.com>
  */
 class Dial implements DialInterface
 {

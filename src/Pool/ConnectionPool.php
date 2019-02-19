@@ -2,14 +2,15 @@
 
 namespace Mix\Database\Pool;
 
-use \Mix\Pool\ConnectionPoolInterface;
+use Mix\Pool\ConnectionPoolInterface;
+use Mix\Pool\AbstractConnectionPool;
 
 /**
  * Class ConnectionPool
  * @author LIUJIAN <coder.keda@gmail.com>
  * @package Mix\Database\Pool
  */
-class ConnectionPool extends \Mix\Pool\ConnectionPool implements ConnectionPoolInterface
+class ConnectionPool extends AbstractConnectionPool implements ConnectionPoolInterface
 {
 
     /**

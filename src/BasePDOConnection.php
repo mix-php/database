@@ -2,13 +2,13 @@
 
 namespace Mix\Database;
 
-use Mix\Core\Component\Component;
+use Mix\Core\Component\AbstractComponent;
 
 /**
  * BasePdo组件
  * @author LIUJIAN <coder.keda@gmail.com>
  */
-class BasePDOConnection extends Component implements PDOConnectionInterface
+class BasePDOConnection extends AbstractComponent implements PDOConnectionInterface
 {
 
     // 数据源格式
