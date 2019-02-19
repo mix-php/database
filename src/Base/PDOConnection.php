@@ -120,16 +120,6 @@ class PDOConnection extends AbstractComponent implements PDOConnectionInterface
     }
 
     /**
-     * 连接
-     * @return bool
-     */
-    protected function connect()
-    {
-        $this->_pdo = $this->createConnection();
-        return true;
-    }
-
-    /**
      * 关闭连接
      * @return bool
      */
@@ -231,20 +221,26 @@ class PDOConnection extends AbstractComponent implements PDOConnectionInterface
     }
 
     /**
+     * 连接
+     */
+    protected function connect()
+    {
+        $this->_pdo = $this->createConnection();
+    }
+
+    /**
      * 自动连接
-     * @return bool
      */
     protected function autoConnect()
     {
-        if (!isset($this->_pdo)) {
-            return $this->connect();
+        if (isset($this->_pdo)) {
+            return;
         }
-        return true;
+        $this->connect();
     }
 
     /**
      * 预处理
-     * @return bool
      */
     protected function prepare()
     {
@@ -271,20 +267,16 @@ class PDOConnection extends AbstractComponent implements PDOConnectionInterface
             $this->_pdoStatement   = $this->_pdo->prepare($this->_sql);
             $this->_sqlPrepareData = [$this->_sql];
         }
-        // 返回
-        return true;
     }
 
     /**
      * 清扫预处理数据
-     * @return bool
      */
     protected function clearPrepare()
     {
         $this->_sql    = '';
         $this->_params = [];
         $this->_values = [];
-        return true;
     }
 
     /**
