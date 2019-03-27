@@ -5,7 +5,7 @@ namespace Mix\Database;
 /**
  * Interface PDOConnectionInterface
  * @package Mix\Database
- * @author LIUJIAN <coder.keda@gmail.com>
+ * @author liu,jian <coder.keda@gmail.com>
  */
 interface PDOConnectionInterface
 {

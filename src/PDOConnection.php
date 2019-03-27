@@ -4,7 +4,7 @@ namespace Mix\Database;
 
 /**
  * Pdo组件
- * @author LIUJIAN <coder.keda@gmail.com>
+ * @author liu,jian <coder.keda@gmail.com>
  */
 class PDOConnection extends \Mix\Database\Base\PDOConnection
 {

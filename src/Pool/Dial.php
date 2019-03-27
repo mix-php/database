@@ -7,7 +7,7 @@ use Mix\Pool\DialInterface;
 /**
  * Class Dial
  * @package Mix\Database\Pool
- * @author LIUJIAN <coder.keda@gmail.com>
+ * @author liu,jian <coder.keda@gmail.com>
  */
 class Dial implements DialInterface
 {

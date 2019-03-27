@@ -8,7 +8,7 @@ use Mix\Pool\AbstractConnectionPool;
 /**
  * Class ConnectionPool
  * @package Mix\Database\Pool
- * @author LIUJIAN <coder.keda@gmail.com>
+ * @author liu,jian <coder.keda@gmail.com>
  */
 class ConnectionPool extends AbstractConnectionPool implements ConnectionPoolInterface
 {
