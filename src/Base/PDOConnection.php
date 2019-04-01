@@ -278,7 +278,7 @@ class PDOConnection extends AbstractComponent implements PDOConnectionInterface
             foreach ($this->_params as $key => $item) {
                 if ($item instanceof Expression) {
                     unset($this->_params[$key]);
-                    $key = substr($key, 0, 1) == ':' ? $key : ":{$key}";
+                    $key        = substr($key, 0, 1) == ':' ? $key : ":{$key}";
                     $this->_sql = str_replace($key, $item->getValue(), $this->_sql);
                 }
             }
