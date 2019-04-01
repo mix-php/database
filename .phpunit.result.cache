@@ -1,1 +1,0 @@
-C:30:"PHPUnit\Runner\TestResultCache":288:{a:2:{s:7:"defects";a:1:{s:49:"Mix\Tests\Database\BasePdoTest::testRawParamsBind";i:3;}s:5:"times";a:3:{s:39:"Mix\Tests\Database\BasePdoTest::testRaw";d:0.002;s:47:"Mix\Tests\Database\BasePdoTest::testRawFunction";d:0.001;s:49:"Mix\Tests\Database\BasePdoTest::testRawParamsBind";d:0.006;}}}
