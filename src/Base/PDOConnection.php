@@ -4,6 +4,7 @@ namespace Mix\Database\Base;
 
 use Mix\Core\Component\AbstractComponent;
 use Mix\Database\PDOConnectionInterface;
+use Mix\Database\Query\Expression;
 
 /**
  * Class PDOConnection
@@ -202,6 +203,32 @@ class PDOConnection extends AbstractComponent implements PDOConnectionInterface
         return $this;
     }
 
+
+    /**
+     * 返回当前PDO连接是否在事务内（在事务内的连接回池会造成下次开启事务产生错误）
+     *
+     * @return bool
+     */
+    public function inTransaction()
+    {
+        /** @var  $Pdo \PDO */
+        $Pdo = $this->_pdo;
+
+        return (bool)($Pdo ? $Pdo->inTransaction() : false);
+    }
+
+    /**
+     * 返回一个RawQuery对象，对象的值将不经过参数绑定，直接解释为SQL的一部分，适合传递数据库原生函数
+     *
+     * @param $value
+     *
+     * @return \Mix\Database\Query\Expression
+     */
+    public static function raw($value)
+    {
+        return new Expression($value);
+    }
+
     /**
      * 绑定数组参数
      * @param $sql
@@ -248,14 +275,31 @@ class PDOConnection extends AbstractComponent implements PDOConnectionInterface
         $this->autoConnect();
         // 准备与参数绑定
         if (!empty($this->_params)) {
+            foreach ($this->_params as $key => $item) {
+                if ($item instanceof Expression) {
+                    unset($this->_params[$key]);
+                    $key = substr($key, 0, 1) == ':' ? $key : ":{$key}";
+                    $this->_sql = str_replace($key, $item->getValue(), $this->_sql);
+                }
+            }
             // 有参数
-            list($sql, $params) = self::bindArrayParams($this->_sql, $this->_params);
+            list($sql, $params) = static::bindArrayParams($this->_sql, $this->_params);
             $this->_pdoStatement   = $this->_pdo->prepare($sql);
             $this->_sqlPrepareData = [$sql, $params, []]; // 必须在 bindParam 前，才能避免类型被转换
             foreach ($params as $key => &$value) {
                 $this->_pdoStatement->bindParam($key, $value);
             }
         } elseif (!empty($this->_values)) {
+            foreach ($this->_values as $key => $value) {
+                if ($value instanceof Expression) {
+                    $needle = '?';
+                    if (($pos = strpos($this->_sql, $needle)) !== false) {
+                        if ($this->_sql = substr_replace($this->_sql, $value->getValue(), $pos, strlen($needle))) {
+                            unset($this->_values[$key]);
+                        }
+                    };
+                }
+            }
             // 批量插入
             $this->_pdoStatement   = $this->_pdo->prepare($this->_sql);
             $this->_sqlPrepareData = [$this->_sql, [], $this->_values];
