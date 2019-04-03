@@ -241,7 +241,7 @@ class PDOConnection extends AbstractComponent implements PDOConnectionInterface
             if (is_array($item)) {
                 unset($params[$key]);
                 $key = substr($key, 0, 1) == ':' ? $key : ":{$key}";
-                $sql = str_replace($key, implode(', ', self::quotes($item)), $sql);
+                $sql = str_replace($key, implode(', ', static::quotes($item)), $sql);
             }
         }
         return [$sql, $params];
@@ -427,8 +427,8 @@ class PDOConnection extends AbstractComponent implements PDOConnectionInterface
         $sqlPrepareData = $this->_sqlPrepareData;
         if (count($sqlPrepareData) > 1) {
             list($sql, $params, $values) = $sqlPrepareData;
-            $values = self::quotes($values);
-            $params = self::quotes($params);
+            $values = static::quotes($values);
+            $params = static::quotes($params);
             // 先处理 values，避免 params 中包含 ? 号污染结果
             $sql = vsprintf(str_replace('?', '%s', $sql), $values);
             // 处理 params
@@ -596,7 +596,7 @@ class PDOConnection extends AbstractComponent implements PDOConnectionInterface
     {
         if (is_array($var)) {
             foreach ($var as $k => $v) {
-                $var[$k] = self::quotes($v);
+                $var[$k] = static::quotes($v);
             }
             return $var;
         }
