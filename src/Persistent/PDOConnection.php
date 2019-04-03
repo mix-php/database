@@ -2,11 +2,13 @@
 
 namespace Mix\Database\Persistent;
 
+use Mix\Database\Base\AbstractPDOConnection;
+
 /**
  * PdoPersistent组件
  * @author liu,jian <coder.keda@gmail.com>
  */
-class PDOConnection extends \Mix\Database\Base\PDOConnection
+class PDOConnection extends AbstractPDOConnection
 {
 
     /**

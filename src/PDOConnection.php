@@ -2,11 +2,13 @@
 
 namespace Mix\Database;
 
+use Mix\Database\Base\AbstractPDOConnection;
+
 /**
  * Pdo组件
  * @author liu,jian <coder.keda@gmail.com>
  */
-class PDOConnection extends \Mix\Database\Base\PDOConnection
+class PDOConnection extends AbstractPDOConnection
 {
 
     // 后置处理事件

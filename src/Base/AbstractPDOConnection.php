@@ -7,11 +7,11 @@ use Mix\Database\PDOConnectionInterface;
 use Mix\Database\Query\Expression;
 
 /**
- * Class PDOConnection
+ * Class AbstractPDOConnection
  * @package Mix\Database\Base
  * @author liu,jian <coder.keda@gmail.com>
  */
-class PDOConnection extends AbstractComponent implements PDOConnectionInterface
+abstract class AbstractPDOConnection extends AbstractComponent implements PDOConnectionInterface
 {
 
     /**
@@ -203,25 +203,20 @@ class PDOConnection extends AbstractComponent implements PDOConnectionInterface
         return $this;
     }
 
-
     /**
      * 返回当前PDO连接是否在事务内（在事务内的连接回池会造成下次开启事务产生错误）
-     *
      * @return bool
      */
     public function inTransaction()
     {
         /** @var  $Pdo \PDO */
         $Pdo = $this->_pdo;
-
         return (bool)($Pdo ? $Pdo->inTransaction() : false);
     }
 
     /**
      * 返回一个RawQuery对象，对象的值将不经过参数绑定，直接解释为SQL的一部分，适合传递数据库原生函数
-     *
      * @param $value
-     *
      * @return \Mix\Database\Query\Expression
      */
     public static function raw($value)
