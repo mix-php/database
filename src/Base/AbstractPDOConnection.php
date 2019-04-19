@@ -484,52 +484,36 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
 
     /**
      * 更新
-     * @param $table
-     * @param $data
-     * @param $where
+     * @param string $table
+     * @param array $data
+     * @param array $where
      * @return $this
      */
-    public function update($table, $data, $where)
+    public function update(string $table, array $data, array $where)
     {
-        $setSql = [];
-        foreach ($data as $key => $item) {
-            if (is_array($item)) {
-                list($operator, $value) = $item;
-                $setSql[]   = "`{$key}` =  `{$key}` {$operator} :{$key}";
-                $data[$key] = $value;
-                continue;
-            }
-            $setSql[] = "`{$key}` = :{$key}";
-        }
-        $whereSql    = [];
-        $whereParams = [];
-        foreach ($where as $key => $value) {
-            $whereSql[$key]                   = "`{$value[0]}` {$value[1]} :where_{$value[0]}";
-            $whereParams["where_{$value[0]}"] = $value[2];
-        }
-        $sql = "UPDATE `{$table}` SET " . implode(', ', $setSql) . " WHERE " . implode(' AND ', $whereSql);
-        $this->createCommand($sql);
-        $this->bindParams($data);
-        $this->bindParams($whereParams);
+        list($dataSql, $dataParams) = static::buildData($data);
+        list($whereSql, $whereParams) = static::buildWhere($where);
+        $this->createCommand([
+            ["UPDATE `{$table}`"],
+            ["SET {$dataSql}", 'params' => $dataParams],
+            ["WHERE {$whereSql}", 'params' => $whereParams],
+        ]);
         return $this;
     }
 
     /**
      * 删除
-     * @param $table
-     * @param $where
+     * @param string $table
+     * @param array $where
      * @return $this
      */
-    public function delete($table, $where)
+    public function delete(string $table, array $where)
     {
-        $whereParams = [];
-        foreach ($where as $key => $value) {
-            $where[$key]                = "`{$value[0]}` {$value[1]} :{$value[0]}";
-            $whereParams["{$value[0]}"] = $value[2];
-        }
-        $sql = "DELETE FROM `{$table}` WHERE " . implode(' AND ', $where);
-        $this->createCommand($sql);
-        $this->bindParams($whereParams);
+        list($sql, $params) = static::buildWhere($where);
+        $this->createCommand([
+            ["DELETE FROM `{$table}`"],
+            ["WHERE {$sql}", 'params' => $params],
+        ]);
         return $this;
     }
 
@@ -596,6 +580,69 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
             return $var;
         }
         return is_string($var) ? "'{$var}'" : $var;
+    }
+
+    /**
+     * 构建数据
+     * @param array $data
+     * @return array
+     */
+    protected static function buildData(array $data)
+    {
+        $sql    = [];
+        $params = [];
+        foreach ($data as $key => $item) {
+            if (is_array($item)) {
+                list($operator, $value) = $item;
+                $sql[]        = "`{$key}` =  `{$key}` {$operator} :{$key}";
+                $params[$key] = $value;
+                continue;
+            }
+            $sql[]        = "`{$key}` = :{$key}";
+            $params[$key] = $item;
+        }
+        return [implode(', ', $sql), $params];
+    }
+
+    /**
+     * 构建条件
+     * @param array $where
+     * @return array
+     */
+    protected static function buildWhere($where)
+    {
+        $sql    = '';
+        $params = [];
+        foreach ($where as $key => $item) {
+            if (count($item) == 3) {
+                list($field, $operator, $condition) = $item;
+                $prefix = 'w_';
+                $name   = $prefix . str_replace('.', '_', $field);
+                $subSql = "`{$field}` {$operator} :{$name}";
+                $sql    .= " AND {$subSql}";
+                if ($key == 0) {
+                    $sql = $subSql;
+                }
+                $params[$name] = $condition;
+                continue;
+            }
+            if (count($item) == 2) {
+                list($symbol, $subWhere) = $item;
+                if ($symbol != 'or') {
+                    continue;
+                }
+                if (count($subWhere) == count($subWhere, 1)) {
+                    $subWhere = [$subWhere];
+                }
+                list($subSql, $subParams) = buildWhere($subWhere);
+                if (count($subWhere) > 1) {
+                    $subSql = "({$subSql})";
+                }
+                $sql    .= " OR {$subSql}";
+                $params = array_merge($params, $subParams);
+            }
+        }
+        return [$sql, $params];
     }
 
 }
