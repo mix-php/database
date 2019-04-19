@@ -110,20 +110,20 @@ interface PDOConnectionInterface
 
     /**
      * 更新
-     * @param $table
-     * @param $data
-     * @param $where
+     * @param string $table
+     * @param array $data
+     * @param array $where
      * @return $this
      */
-    public function update($table, $data, $where);
+    public function update(string $table, array $data, array $where);
 
     /**
      * 删除
-     * @param $table
-     * @param $where
+     * @param string $table
+     * @param array $where
      * @return $this
      */
-    public function delete($table, $where);
+    public function delete(string $table, array $where);
 
     /**
      * 自动事务
