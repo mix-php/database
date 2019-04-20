@@ -4,7 +4,9 @@ namespace Mix\Database\Base;
 
 use Mix\Core\Component\AbstractComponent;
 use Mix\Database\PDOConnectionInterface;
+use Mix\Database\Query\BuildHelper;
 use Mix\Database\Query\Expression;
+use Mix\Database\QueryBuilder;
 
 /**
  * Class AbstractPDOConnection
@@ -437,6 +439,22 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     }
 
     /**
+     * 给字符串加单引号
+     * @param $var
+     * @return array|string
+     */
+    protected static function quotes($var)
+    {
+        if (is_array($var)) {
+            foreach ($var as $k => $v) {
+                $var[$k] = static::quotes($v);
+            }
+            return $var;
+        }
+        return is_string($var) ? "'{$var}'" : $var;
+    }
+
+    /**
      * 插入
      * @param $table
      * @param $data
@@ -491,8 +509,8 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     public function update(string $table, array $data, array $where)
     {
-        list($dataSql, $dataParams) = static::buildData($data);
-        list($whereSql, $whereParams) = static::buildWhere($where);
+        list($dataSql, $dataParams) = BuildHelper::buildData($data);
+        list($whereSql, $whereParams) = BuildHelper::buildWhere($where);
         $this->createCommand([
             ["UPDATE `{$table}`"],
             ["SET {$dataSql}", 'params' => $dataParams],
@@ -509,7 +527,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     public function delete(string $table, array $where)
     {
-        list($sql, $params) = static::buildWhere($where);
+        list($sql, $params) = BuildHelper::buildWhere($where);
         $this->createCommand([
             ["DELETE FROM `{$table}`"],
             ["WHERE {$sql}", 'params' => $params],
@@ -567,83 +585,13 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     }
 
     /**
-     * 给字符串加单引号
-     * @param $var
-     * @return array|string
+     * 启动查询生成器
+     * @param string $table
+     * @return QueryBuilder
      */
-    protected static function quotes($var)
+    public function table(string $table)
     {
-        if (is_array($var)) {
-            foreach ($var as $k => $v) {
-                $var[$k] = static::quotes($v);
-            }
-            return $var;
-        }
-        return is_string($var) ? "'{$var}'" : $var;
-    }
-
-    /**
-     * 构建数据
-     * @param array $data
-     * @return array
-     */
-    protected static function buildData(array $data)
-    {
-        $sql    = [];
-        $params = [];
-        foreach ($data as $key => $item) {
-            if (is_array($item)) {
-                list($operator, $value) = $item;
-                $sql[]        = "`{$key}` =  `{$key}` {$operator} :{$key}";
-                $params[$key] = $value;
-                continue;
-            }
-            $sql[]        = "`{$key}` = :{$key}";
-            $params[$key] = $item;
-        }
-        return [implode(', ', $sql), $params];
-    }
-
-    /**
-     * 构建条件
-     * @param array $where
-     * @param int $id
-     * @return array
-     */
-    protected static function buildWhere(array $where, int $id = 0)
-    {
-        $sql    = '';
-        $params = [];
-        foreach ($where as $key => $item) {
-            if (count($item) == 3) {
-                list($field, $operator, $condition) = $item;
-                $prefix = "w{$id}_";
-                $name   = $prefix . str_replace('.', '_', $field);
-                $subSql = "`{$field}` {$operator} :{$name}";
-                $sql    .= " AND {$subSql}";
-                if ($key == 0) {
-                    $sql = $subSql;
-                }
-                $params[$name] = $condition;
-                continue;
-            }
-            if (count($item) == 2) {
-                list($symbol, $subWhere) = $item;
-                if (!in_array($symbol, ['or', 'and'])) {
-                    continue;
-                }
-                if (count($subWhere) == count($subWhere, 1)) {
-                    $subWhere = [$subWhere];
-                }
-                list($subSql, $subParams) = static::buildWhere($subWhere, ++$id);
-                if (count($subWhere) > 1) {
-                    $subSql = "({$subSql})";
-                }
-                $sql    .= " " . strtoupper($symbol) . " {$subSql}";
-                $params = array_merge($params, $subParams);
-            }
-        }
-        return [$sql, $params];
+        return QueryBuilder::new($this)->table($table);
     }
 
 }

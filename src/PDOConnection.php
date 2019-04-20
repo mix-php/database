@@ -5,13 +5,16 @@ namespace Mix\Database;
 use Mix\Database\Base\AbstractPDOConnection;
 
 /**
- * Pdo组件
+ * Class PDOConnection
+ * @package Mix\Database
  * @author liu,jian <coder.keda@gmail.com>
  */
 class PDOConnection extends AbstractPDOConnection
 {
 
-    // 后置处理事件
+    /**
+     * 后置处理事件
+     */
     public function onAfterInitialize()
     {
         parent::onAfterInitialize();
@@ -19,7 +22,9 @@ class PDOConnection extends AbstractPDOConnection
         $this->disconnect();
     }
 
-    // 析构事件
+    /**
+     * 析构事件
+     */
     public function onDestruct()
     {
         parent::onDestruct();

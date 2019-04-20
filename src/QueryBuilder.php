@@ -19,95 +19,80 @@ class QueryBuilder
     public $connection;
 
     /**
-     * @var array
+     * @var string
      */
-    public $table = '';
+    protected $_table = '';
 
     /**
      * @var string
      */
-    public $select = '';
+    protected $_select = '';
 
     /**
      * @var array
      */
-    public $join = [];
+    protected $_join = [];
 
     /**
      * @var array
      */
-    public $where = [];
+    protected $_where = [];
 
     /**
      * @var array
      */
-    public $orderBy = [];
+    protected $_orderBy = [];
 
     /**
      * @var array
      */
-    public $groupBy = [];
+    protected $_groupBy = [];
 
     /**
      * @var array
      */
-    public $having = [];
+    protected $_having = [];
 
     /**
      * @var int
      */
-    public $offset = 0;
+    protected $_offset = 0;
 
     /**
      * @var int
      */
-    public $limit = 0;
+    protected $_limit = 0;
 
     /**
      * 使用静态方法创建实例
-     * @param $db
-     * @return $this
+     * @param PDOConnectionInterface $db
+     * @return QueryBuilder
      */
-    public static function new($db)
+    public static function new(PDOConnectionInterface $connection)
     {
-        return new static($db);
+        return new static($connection);
     }
 
     /**
      * QueryBuilder constructor.
-     * @param $db
+     * @param PDOConnectionInterface $db
      */
-    public function __construct($db)
+    public function __construct(PDOConnectionInterface $connection)
     {
-        switch (true) {
-            case $db instanceof ConnectionPoolInterface:
-                $this->connection = $db->getConnection();
-                break;
-            case $db instanceof PDOConnectionInterface:
-                $this->connection = $db;
-                break;
-            default:
-                throw new \RuntimeException('$db type is not \'Mix\Pool\ConnectionPoolInterface\' or \'Mix\Database\PDOConnectionInterface\'');
-        }
+        $this->connection = $connection;
     }
 
     /**
-     * 释放连接
-     * @return bool
+     * 设置表
+     * @param string $table
+     * @return $this
      */
-    public function release()
+    public function table(string $table)
     {
-        if (!method_exists($this->connection, 'release')) {
-            return false;
-        }
-        $this->connection->release();
-        return true;
+        $this->_table = $table;
+        return $this;
     }
 
-
-    public function table($table)
-    {
-
-    }
+    
 
 }

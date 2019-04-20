@@ -1,0 +1,77 @@
+<?php
+
+namespace Mix\Database\Query;
+
+/**
+ * Class BuildHelper
+ * @package Mix\Database\Query
+ * @author liu,jian <coder.keda@gmail.com>
+ */
+class BuildHelper
+{
+
+    /**
+     * 构建数据
+     * @param array $data
+     * @return array
+     */
+    public static function buildData(array $data)
+    {
+        $sql    = [];
+        $params = [];
+        foreach ($data as $key => $item) {
+            if (is_array($item)) {
+                list($operator, $value) = $item;
+                $sql[]        = "`{$key}` =  `{$key}` {$operator} :{$key}";
+                $params[$key] = $value;
+                continue;
+            }
+            $sql[]        = "`{$key}` = :{$key}";
+            $params[$key] = $item;
+        }
+        return [implode(', ', $sql), $params];
+    }
+
+    /**
+     * 构建条件
+     * @param array $where
+     * @param int $id
+     * @return array
+     */
+    public static function buildWhere(array $where, int $id = 0)
+    {
+        $sql    = '';
+        $params = [];
+        foreach ($where as $key => $item) {
+            if (count($item) == 3) {
+                list($field, $operator, $condition) = $item;
+                $prefix = "w{$id}_";
+                $name   = $prefix . str_replace('.', '_', $field);
+                $subSql = "`{$field}` {$operator} :{$name}";
+                $sql    .= " AND {$subSql}";
+                if ($key == 0) {
+                    $sql = $subSql;
+                }
+                $params[$name] = $condition;
+                continue;
+            }
+            if (count($item) == 2) {
+                list($symbol, $subWhere) = $item;
+                if (!in_array($symbol, ['or', 'and'])) {
+                    continue;
+                }
+                if (count($subWhere) == count($subWhere, 1)) {
+                    $subWhere = [$subWhere];
+                }
+                list($subSql, $subParams) = static::buildWhere($subWhere, ++$id);
+                if (count($subWhere) > 1) {
+                    $subSql = "({$subSql})";
+                }
+                $sql    .= " " . strtoupper($symbol) . " {$subSql}";
+                $params = array_merge($params, $subParams);
+            }
+        }
+        return [$sql, $params];
+    }
+
+}
