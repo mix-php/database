@@ -134,11 +134,11 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     }
 
     /**
-     * 查询构建
-     * @param $item
+     * 构建查询
+     * @param array $item
      * @return $this
      */
-    public function queryBuilder($item)
+    protected function buildQuery(array $item)
     {
         if (isset($item['if']) && $item['if'] == false) {
             return $this;
@@ -168,7 +168,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
         // 数组构建
         if (is_array($sql)) {
             foreach ($sql as $item) {
-                $this->queryBuilder($item);
+                $this->buildQuery($item);
             }
             $this->_sql = implode(' ', $this->_sqlFragments);
         }
@@ -185,10 +185,10 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
 
     /**
      * 绑定参数
-     * @param $data
+     * @param array $data
      * @return $this
      */
-    public function bindParams($data)
+    public function bindParams(array $data)
     {
         $this->_params += $data;
         return $this;
@@ -196,10 +196,10 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
 
     /**
      * 绑定值
-     * @param $data
+     * @param array $data
      * @return $this
      */
-    protected function bindValues($data)
+    protected function bindValues(array $data)
     {
         $this->_values += $data;
         return $this;
@@ -218,10 +218,10 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
 
     /**
      * 返回一个RawQuery对象，对象的值将不经过参数绑定，直接解释为SQL的一部分，适合传递数据库原生函数
-     * @param $value
+     * @param string $value
      * @return \Mix\Database\Query\Expression
      */
-    public static function raw($value)
+    public static function raw(string $value)
     {
         return new Expression($value);
     }
@@ -352,7 +352,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      * @param int $columnNumber
      * @return array
      */
-    public function queryColumn($columnNumber = 0)
+    public function queryColumn(int $columnNumber = 0)
     {
         $this->prepare();
         $this->_pdoStatement->execute();
@@ -531,10 +531,10 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
 
     /**
      * 自动事务
-     * @param $closure
+     * @param \Closure $closure
      * @throws \Throwable
      */
-    public function transaction($closure)
+    public function transaction(\Closure $closure)
     {
         $this->beginTransaction();
         try {
