@@ -89,7 +89,7 @@ class BuildHelper
         foreach ($on as $key => $item) {
             if (count($item) == 3) {
                 list($field, $operator, $condition) = $item;
-                $subSql = "{$field} {$operator} :{$condition}";
+                $subSql = "{$field} {$operator} {$condition}";
                 $sql    .= " AND {$subSql}";
                 if ($key == 0) {
                     $sql = $subSql;

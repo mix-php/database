@@ -239,18 +239,17 @@ class QueryBuilder
                 }
                 $select = implode(', ', $select);
                 $sql[]  = ["SELECT {$select}"];
-
+            case $this->_table:
+                $sql[] = ["FROM `{$this->_table}`"];
             case $this->_join:
                 foreach ($this->_join as $item) {
                     list($type, $table, $on) = $item;
                     $condition = BuildHelper::buildJoinOn($on);
                     $sql[]     = ["{$type} {$table} ON {$condition}"];
                 }
-
             case $this->_where:
                 list($subSql, $subParams) = BuildHelper::buildWhere($this->_where);
                 $sql[] = ["WHERE {$subSql}", 'params' => $subParams];
-
             case $this->_orderBy:
                 $subSql = [];
                 foreach ($this->_orderBy as $item) {
@@ -262,7 +261,7 @@ class QueryBuilder
 
         var_dump($sql);
 
-        //return $this->connection->createCommand($sql)->queryAll();
+        return $this->connection->createCommand($sql)->queryAll();
     }
 
     public function first()
