@@ -53,22 +53,25 @@ class BuildHelper
                     $sql = $subSql;
                 }
                 $params[$name] = $condition;
-                continue;
             }
             if (count($item) == 2) {
                 list($symbol, $subWhere) = $item;
-                if (!in_array($symbol, ['or', 'and'])) {
-                    continue;
+                if (in_array($symbol, ['or', 'and']) && is_array($subWhere)) {
+                    if (count($subWhere) == count($subWhere, 1)) {
+                        $subWhere = [$subWhere];
+                    }
+                    list($subSql, $subParams) = static::buildWhere($subWhere, ++$id);
+                    if (count($subWhere) > 1) {
+                        $subSql = "({$subSql})";
+                    }
+                    $sql    .= " " . strtoupper($symbol) . " {$subSql}";
+                    $params = array_merge($params, $subParams);
+                } else {
+                    $sql    .= " AND {$subSql}";
+                    if ($key == 0) {
+                        $sql = $subSql;
+                    }
                 }
-                if (count($subWhere) == count($subWhere, 1)) {
-                    $subWhere = [$subWhere];
-                }
-                list($subSql, $subParams) = static::buildWhere($subWhere, ++$id);
-                if (count($subWhere) > 1) {
-                    $subSql = "({$subSql})";
-                }
-                $sql    .= " " . strtoupper($symbol) . " {$subSql}";
-                $params = array_merge($params, $subParams);
             }
         }
         return [$sql, $params];
