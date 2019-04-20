@@ -225,48 +225,97 @@ class QueryBuilder
         return $this;
     }
 
-    public function get()
+    /**
+     * 创建命令
+     * @return PDOConnectionInterface
+     */
+    protected function createCommand()
     {
         $sql = [];
-        switch (true) {
-            case $this->_select:
-                $select = $this->_select;
-                // 原始方法
-                foreach ($select as $key => $item) {
-                    if ($item instanceof Expression) {
-                        $select[$key] = $item->getValue();
-                    }
+        // select
+        if ($this->_select) {
+            $select = $this->_select;
+            // 原始方法
+            foreach ($select as $key => $item) {
+                if ($item instanceof Expression) {
+                    $select[$key] = $item->getValue();
                 }
-                $select = implode(', ', $select);
-                $sql[]  = ["SELECT {$select}"];
-            case $this->_table:
-                $sql[] = ["FROM `{$this->_table}`"];
-            case $this->_join:
-                foreach ($this->_join as $item) {
-                    list($type, $table, $on) = $item;
-                    $condition = BuildHelper::buildJoinOn($on);
-                    $sql[]     = ["{$type} {$table} ON {$condition}"];
-                }
-            case $this->_where:
-                list($subSql, $subParams) = BuildHelper::buildWhere($this->_where);
-                $sql[] = ["WHERE {$subSql}", 'params' => $subParams];
-            case $this->_orderBy:
-                $subSql = [];
-                foreach ($this->_orderBy as $item) {
-                    list($field, $order) = $item;
-                    $subSql[] = "{$field} {$order}";
-                }
-                $sql[] = ["ORDER BY " . implode(', ', $subSql)];
+            }
+            $select = implode(', ', $select);
+            $sql[]  = ["SELECT {$select}"];
+        } else {
+            $sql[] = ["SELECT *"];
         }
-
-        var_dump($sql);
-
-        return $this->connection->createCommand($sql)->queryAll();
+        // table
+        if ($this->_table) {
+            $sql[] = ["FROM `{$this->_table}`"];
+        }
+        if ($this->_join) {
+            foreach ($this->_join as $item) {
+                list($type, $table, $on) = $item;
+                $condition = BuildHelper::buildJoinOn($on);
+                $sql[]     = ["{$type} {$table} ON {$condition}"];
+            }
+        }
+        // where
+        if ($this->_where) {
+            list($subSql, $subParams) = BuildHelper::buildWhere($this->_where);
+            $sql[] = ["WHERE {$subSql}", 'params' => $subParams];
+        }
+        // orderBy
+        if ($this->_orderBy) {
+            $subSql = [];
+            foreach ($this->_orderBy as $item) {
+                list($field, $order) = $item;
+                $subSql[] = "{$field} {$order}";
+            }
+            $sql[] = ["ORDER BY " . implode(', ', $subSql)];
+        }
+        // groupBy
+        if ($this->_groupBy) {
+            $sql[] = ["GROUP BY " . implode(', ', $this->_groupBy)];
+        }
+        // having
+        if ($this->_having) {
+            $subSql = [];
+            $having = $this->_having;
+            // 原始方法
+            foreach ($having as $key => $item) {
+                if ($item instanceof Expression) {
+                    $having[$key] = $item->getValue();
+                }
+            }
+            foreach ($this->_having as $item) {
+                list($field, $operator, $condition) = $item;
+                $subSql[] = "{$field} {$operator} {$condition}";
+            }
+            $subSql = count($subSql) == 1 ? array_pop($subSql) : implode(' AND ', $subSql);
+            $sql[]  = ["HAVING {$subSql}"];
+        }
+        // limit and offset
+        if ($this->_limit > 0) {
+            $sql[] = ['LIMIT :__offset, :__limit', 'params' => ['__offset' => $this->_offset, '__limit' => $this->_limit]];
+        }
+        // 返回
+        return $this->connection->createCommand($sql);
     }
 
+    /**
+     * 返回多行
+     * @return array
+     */
+    public function get()
+    {
+        return $this->createCommand()->queryAll();
+    }
+
+    /**
+     * 返回一行
+     * @return mixed
+     */
     public function first()
     {
-
+        return $this->createCommand()->queryOne();
     }
 
 }

@@ -45,7 +45,7 @@ class BuildHelper
         foreach ($where as $key => $item) {
             if (count($item) == 3) {
                 list($field, $operator, $condition) = $item;
-                $prefix = "w{$id}_";
+                $prefix = "__{$id}_";
                 $name   = $prefix . str_replace('.', '_', $field);
                 $subSql = "{$field} {$operator} :{$name}";
                 $sql    .= " AND {$subSql}";
