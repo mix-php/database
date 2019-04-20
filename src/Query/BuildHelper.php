@@ -47,7 +47,7 @@ class BuildHelper
                 list($field, $operator, $condition) = $item;
                 $prefix = "w{$id}_";
                 $name   = $prefix . str_replace('.', '_', $field);
-                $subSql = "`{$field}` {$operator} :{$name}";
+                $subSql = "{$field} {$operator} :{$name}";
                 $sql    .= " AND {$subSql}";
                 if ($key == 0) {
                     $sql = $subSql;
@@ -72,6 +72,46 @@ class BuildHelper
             }
         }
         return [$sql, $params];
+    }
+
+    /**
+     * 构建Join条件
+     * @param array $on
+     * @param int $id
+     * @return string
+     */
+    public static function buildJoinOn(array $on, int $id = 0)
+    {
+        $sql = '';
+        if (count($on) == count($on, 1)) {
+            $on = [$on];
+        }
+        foreach ($on as $key => $item) {
+            if (count($item) == 3) {
+                list($field, $operator, $condition) = $item;
+                $subSql = "{$field} {$operator} :{$condition}";
+                $sql    .= " AND {$subSql}";
+                if ($key == 0) {
+                    $sql = $subSql;
+                }
+                continue;
+            }
+            if (count($item) == 2) {
+                list($symbol, $subOn) = $item;
+                if (!in_array($symbol, ['or', 'and'])) {
+                    continue;
+                }
+                if (count($subOn) == count($subOn, 1)) {
+                    $subOn = [$subOn];
+                }
+                $subSql = static::buildJoinOn($subOn, ++$id);
+                if (count($subOn) > 1) {
+                    $subSql = "({$subSql})";
+                }
+                $sql .= " " . strtoupper($symbol) . " {$subSql}";
+            }
+        }
+        return $sql;
     }
 
 }

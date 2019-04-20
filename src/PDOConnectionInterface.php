@@ -156,4 +156,11 @@ interface PDOConnectionInterface
      */
     public static function raw(string $value);
 
+    /**
+     * 启动查询生成器
+     * @param string $table
+     * @return QueryBuilder
+     */
+    public function table(string $table);
+
 }
