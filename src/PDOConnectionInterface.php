@@ -94,19 +94,19 @@ interface PDOConnectionInterface
 
     /**
      * 插入
-     * @param $table
-     * @param $data
+     * @param string $table
+     * @param array $data
      * @return $this
      */
-    public function insert($table, $data);
+    public function insert(string $table, array $data);
 
     /**
      * 批量插入
-     * @param $table
-     * @param $data
+     * @param string $table
+     * @param array $data
      * @return $this
      */
-    public function batchInsert($table, $data);
+    public function batchInsert(string $table, array $data);
 
     /**
      * 更新

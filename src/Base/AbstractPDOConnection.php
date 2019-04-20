@@ -272,6 +272,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
         $this->autoConnect();
         // 准备与参数绑定
         if (!empty($this->_params)) {
+            // 原始方法
             foreach ($this->_params as $key => $item) {
                 if ($item instanceof Expression) {
                     unset($this->_params[$key]);
@@ -287,16 +288,6 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
                 $this->_pdoStatement->bindParam($key, $value);
             }
         } elseif (!empty($this->_values)) {
-            foreach ($this->_values as $key => $value) {
-                if ($value instanceof Expression) {
-                    $needle = '?';
-                    if (($pos = strpos($this->_sql, $needle)) !== false) {
-                        if ($this->_sql = substr_replace($this->_sql, $value->getValue(), $pos, strlen($needle))) {
-                            unset($this->_values[$key]);
-                        }
-                    };
-                }
-            }
             // 批量插入
             $this->_pdoStatement   = $this->_pdo->prepare($this->_sql);
             $this->_sqlPrepareData = [$this->_sql, [], $this->_values];
@@ -456,11 +447,11 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
 
     /**
      * 插入
-     * @param $table
-     * @param $data
+     * @param string $table
+     * @param array $data
      * @return $this
      */
-    public function insert($table, $data)
+    public function insert(string $table, array $data)
     {
         $keys   = array_keys($data);
         $fields = array_map(function ($key) {
@@ -474,27 +465,30 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
 
     /**
      * 批量插入
-     * @param $table
-     * @param $data
+     * @param string $table
+     * @param array $data
      * @return $this
      */
-    public function batchInsert($table, $data)
+    public function batchInsert(string $table, array $data)
     {
         $keys   = array_keys($data[0]);
         $sql    = "INSERT INTO `{$table}` (`" . implode('`, `', $keys) . "`) VALUES ";
-        $fields = [];
-        for ($i = 0; $i < count($keys); $i++) {
-            $fields[] = '?';
-        }
-        $values    = [];
-        $valuesSql = [];
+        $values = [];
+        $subSql = [];
         foreach ($data as $item) {
-            foreach ($item as $value) {
+            $tmp = [];
+            foreach ($item as $key => $value) {
+                // 原始方法
+                if ($value instanceof Expression) {
+                    $tmp[] = $value->getValue();
+                    continue;
+                }
                 $values[] = $value;
+                $tmp[]    = '?';
             }
-            $valuesSql[] = "(" . implode(', ', $fields) . ")";
+            $subSql[] = "(" . implode(', ', $tmp) . ")";
         }
-        $sql .= implode(', ', $valuesSql);
+        $sql .= implode(', ', $subSql);
         $this->createCommand($sql);
         $this->bindValues($values);
         return $this;
