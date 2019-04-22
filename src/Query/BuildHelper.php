@@ -38,11 +38,12 @@ class BuildHelper
      * @param int $id
      * @return array
      */
-    public static function buildWhere(array $where, int $id = 0)
+    public static function buildWhere(array $where, &$id = null)
     {
         $sql    = '';
         $params = [];
         foreach ($where as $key => $item) {
+            $id++;
             $length = count($item);
             if ($length == 2) {
                 // 子条件
@@ -51,7 +52,7 @@ class BuildHelper
                     if (count($subWhere) == count($subWhere, 1)) {
                         $subWhere = [$subWhere];
                     }
-                    list($subSql, $subParams) = static::buildWhere($subWhere, ++$id);
+                    list($subSql, $subParams) = static::buildWhere($subWhere, $id);
                     if (count($subWhere) > 1) {
                         $subSql = "({$subSql})";
                     }
@@ -119,10 +120,9 @@ class BuildHelper
     /**
      * 构建Join条件
      * @param array $on
-     * @param int $id
      * @return string
      */
-    public static function buildJoinOn(array $on, int $id = 0)
+    public static function buildJoinOn(array $on)
     {
         $sql = '';
         if (count($on) == count($on, 1)) {
@@ -146,7 +146,7 @@ class BuildHelper
                 if (count($subOn) == count($subOn, 1)) {
                     $subOn = [$subOn];
                 }
-                $subSql = static::buildJoinOn($subOn, ++$id);
+                $subSql = static::buildJoinOn($subOn);
                 if (count($subOn) > 1) {
                     $subSql = "({$subSql})";
                 }
