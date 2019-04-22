@@ -234,14 +234,7 @@ class QueryBuilder
         $sql = [];
         // select
         if ($this->_select) {
-            $select = $this->_select;
-            // 原始方法
-            foreach ($select as $key => $item) {
-                if ($item instanceof Expression) {
-                    $select[$key] = $item->getValue();
-                }
-            }
-            $select = implode(', ', $select);
+            $select = implode(', ', $this->_select);
             $sql[]  = ["SELECT {$select}"];
         } else {
             $sql[] = ["SELECT *"];
@@ -279,12 +272,6 @@ class QueryBuilder
         if ($this->_having) {
             $subSql = [];
             $having = $this->_having;
-            // 原始方法
-            foreach ($having as $key => $item) {
-                if ($item instanceof Expression) {
-                    $having[$key] = $item->getValue();
-                }
-            }
             foreach ($this->_having as $item) {
                 list($field, $operator, $condition) = $item;
                 $subSql[] = "{$field} {$operator} {$condition}";
