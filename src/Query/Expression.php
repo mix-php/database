@@ -1,10 +1,12 @@
 <?php
-/**
- * @author ihipop@gmail.com @ 19-3-28 上午10:36 For mix-v2.
- */
 
 namespace Mix\Database\Query;
 
+/**
+ * Class Expression
+ * @package Mix\Database\Query
+ * @author ihipop@gmail.com @ 19-3-28 上午10:36 For mix-v2
+ */
 class Expression
 {
 
