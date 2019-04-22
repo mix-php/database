@@ -62,8 +62,9 @@ class BuildHelper
                 // 无值条件
                 if (is_string($item[0]) && is_string($item[1])) {
                     list($field, $operator) = $item;
-                    $subSql = "{$field} {$operator}";
-                    $sql    .= " AND {$subSql}";
+                    $operator = strtoupper($operator);
+                    $subSql   = "{$field} {$operator}";
+                    $sql      .= " AND {$subSql}";
                     if ($key == 0) {
                         $sql = $subSql;
                     }
