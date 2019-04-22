@@ -241,7 +241,7 @@ class QueryBuilder
         }
         // table
         if ($this->_table) {
-            $sql[] = ["FROM `{$this->_table}`"];
+            $sql[] = ["FROM {$this->_table}"];
         }
         if ($this->_join) {
             foreach ($this->_join as $item) {
