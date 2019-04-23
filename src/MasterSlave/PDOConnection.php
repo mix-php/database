@@ -128,7 +128,7 @@ class PDOConnection extends AbstractPDOConnection
      * @param int $columnNumber
      * @return array
      */
-    public function queryColumn($columnNumber = 0)
+    public function queryColumn(int $columnNumber = 0)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
@@ -240,7 +240,7 @@ class PDOConnection extends AbstractPDOConnection
      * 检查是否在一个事务内
      * @return bool
      */
-    protected function inTransaction()
+    public function inTransaction()
     {
         // 检查是否有Master连接，且在一个事务内
         if (isset($this->_pdoMaster) && $this->_pdoMaster->inTransaction()) {

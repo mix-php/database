@@ -53,7 +53,7 @@ class PDOConnection extends AbstractPDOConnection
      * @param int $columnNumber
      * @return array
      */
-    public function queryColumn($columnNumber = 0)
+    public function queryColumn(int $columnNumber = 0)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
