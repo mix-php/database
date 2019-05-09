@@ -16,7 +16,9 @@
     }
   ],
   "require": {
-    "php": ">=7.0.0"
+    "php": ">=7.0.0",
+    "mix/framework": "dev-master",
+    "mix/pool": "dev-master"
   },
   "autoload": {
     "psr-4": {
