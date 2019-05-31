@@ -348,8 +348,8 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
         // 执行
         $microtime           = static::microtime();
         $success             = $this->_pdoStatement->execute();
-        $executeTime         = (static::microtime() - $microtime) * 1000;
-        $this->_queryData[3] = $executeTime;
+        $time                = round((static::microtime() - $microtime) * 1000, 2);
+        $this->_queryData[3] = $time;
         // 清扫
         $this->clearPrepare();
         // 执行监听器
@@ -463,7 +463,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
         return [
             'sql'      => $sql,
             'bindings' => $values ?: $params,
-            'time'     => round($time, 2),
+            'time'     => $time,
         ];
     }
 
