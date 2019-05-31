@@ -80,10 +80,16 @@ interface PDOConnectionInterface
     public function getRowCount();
 
     /**
-     * 返回原生SQL语句
+     * 返回最后的SQL语句
      * @return string
      */
-    public function getRawSql();
+    public function getLastSql();
+
+    /**
+     * 获取最后的日志
+     * @return array
+     */
+    public function getLastLog();
 
     /**
      * 插入

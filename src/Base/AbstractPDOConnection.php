@@ -334,7 +334,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
         if (!$this->listener) {
             return;
         }
-        $this->listener->listen($this->getQueryLog());
+        $this->listener->listen($this->getLastLog());
     }
 
     /**
@@ -432,10 +432,10 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     }
 
     /**
-     * 返回原生SQL语句
+     * 返回最后的SQL语句
      * @return string
      */
-    public function getRawSql()
+    public function getLastSql()
     {
         list($sql, $params, $values) = $this->_queryData;
         if (empty($params) && empty($values)) {
@@ -454,10 +454,10 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     }
 
     /**
-     * 获取查询日志
+     * 获取最后的日志
      * @return array
      */
-    public function getQueryLog()
+    public function getLastLog()
     {
         list($sql, $params, $values, $time) = $this->_queryData;
         return [
