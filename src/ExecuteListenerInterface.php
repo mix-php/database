@@ -12,9 +12,8 @@ interface ExecuteListenerInterface
 
     /**
      * 监听
-     * @param array $query
-     * @return mixed
+     * @param array $log
      */
-    public function listen($query);
+    public function listen($log);
 
 }
