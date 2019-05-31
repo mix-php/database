@@ -40,6 +40,11 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     public $driverOptions = [];
 
     /**
+     * @var \Mix\Database\QueryListenerInterface
+     */
+    public $listener;
+
+    /**
      * PDO
      * @var \PDO
      */
@@ -322,17 +327,34 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     }
 
     /**
+     * 执行监听器
+     */
+    protected function runListener()
+    {
+        if (!$this->listener) {
+            return;
+        }
+        $this->listener->listen($this->getQueryLog());
+    }
+
+    /**
      * 执行SQL语句
      * @return bool
      */
     public function execute()
     {
+        // 预处理
         $this->prepare();
+        // 执行
         $microtime           = static::microtime();
         $success             = $this->_pdoStatement->execute();
         $executeTime         = (static::microtime() - $microtime) * 1000;
         $this->_queryData[3] = $executeTime;
+        // 清扫
         $this->clearPrepare();
+        // 执行监听器
+        $this->runListener();
+        // 返回
         return $success;
     }
 
