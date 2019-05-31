@@ -76,10 +76,10 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     protected $_values = [];
 
     /**
-     * sql原始数据
+     * 查询数据
      * @var array
      */
-    protected $_sqlPrepareData = [];
+    protected $_queryData = [];
 
     /**
      * 默认驱动连接选项
@@ -178,7 +178,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
         // 清扫数据
         $this->_sqlFragments = [];
         // 保存SQL
-        $this->_sqlPrepareData = [$this->_sql];
+        $this->_queryData = [$this->_sql, [], [], 0];
         // 返回
         return $this;
     }
@@ -282,22 +282,22 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
             }
             // 有参数
             list($sql, $params) = static::bindArrayParams($this->_sql, $this->_params);
-            $this->_pdoStatement   = $this->_pdo->prepare($sql);
-            $this->_sqlPrepareData = [$sql, $params, []]; // 必须在 bindParam 前，才能避免类型被转换
+            $this->_pdoStatement = $this->_pdo->prepare($sql);
+            $this->_queryData    = [$sql, $params, [], 0]; // 必须在 bindParam 前，才能避免类型被转换
             foreach ($params as $key => &$value) {
                 $this->_pdoStatement->bindParam($key, $value);
             }
         } elseif (!empty($this->_values)) {
             // 批量插入
-            $this->_pdoStatement   = $this->_pdo->prepare($this->_sql);
-            $this->_sqlPrepareData = [$this->_sql, [], $this->_values];
+            $this->_pdoStatement = $this->_pdo->prepare($this->_sql);
+            $this->_queryData    = [$this->_sql, [], $this->_values, 0];
             foreach ($this->_values as $key => $value) {
                 $this->_pdoStatement->bindValue($key + 1, $value);
             }
         } else {
             // 无参数
-            $this->_pdoStatement   = $this->_pdo->prepare($this->_sql);
-            $this->_sqlPrepareData = [$this->_sql];
+            $this->_pdoStatement = $this->_pdo->prepare($this->_sql);
+            $this->_queryData    = [$this->_sql, [], [], 0];
         }
     }
 
@@ -312,14 +312,37 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     }
 
     /**
+     * 获取微秒时间
+     * @return float
+     */
+    protected static function microtime()
+    {
+        list($usec, $sec) = explode(" ", microtime());
+        return ((float)$usec + (float)$sec);
+    }
+
+    /**
+     * 执行SQL语句
+     * @return bool
+     */
+    public function execute()
+    {
+        $this->prepare();
+        $microtime           = static::microtime();
+        $success             = $this->_pdoStatement->execute();
+        $executeTime         = (static::microtime() - $microtime) * 1000;
+        $this->_queryData[3] = $executeTime;
+        $this->clearPrepare();
+        return $success;
+    }
+
+    /**
      * 返回结果集
      * @return \PDOStatement
      */
     public function query()
     {
-        $this->prepare();
-        $this->_pdoStatement->execute();
-        $this->clearPrepare();
+        $this->execute();
         return $this->_pdoStatement;
     }
 
@@ -329,9 +352,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     public function queryOne()
     {
-        $this->prepare();
-        $this->_pdoStatement->execute();
-        $this->clearPrepare();
+        $this->execute();
         return $this->_pdoStatement->fetch($this->_driverOptions[\PDO::ATTR_DEFAULT_FETCH_MODE]);
     }
 
@@ -341,9 +362,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     public function queryAll()
     {
-        $this->prepare();
-        $this->_pdoStatement->execute();
-        $this->clearPrepare();
+        $this->execute();
         return $this->_pdoStatement->fetchAll();
     }
 
@@ -354,9 +373,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     public function queryColumn(int $columnNumber = 0)
     {
-        $this->prepare();
-        $this->_pdoStatement->execute();
-        $this->clearPrepare();
+        $this->execute();
         $column = [];
         while ($row = $this->_pdoStatement->fetchColumn($columnNumber)) {
             $column[] = $row;
@@ -370,22 +387,8 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     public function queryScalar()
     {
-        $this->prepare();
-        $this->_pdoStatement->execute();
-        $this->clearPrepare();
+        $this->execute();
         return $this->_pdoStatement->fetchColumn();
-    }
-
-    /**
-     * 执行SQL语句
-     * @return bool
-     */
-    public function execute()
-    {
-        $this->prepare();
-        $success = $this->_pdoStatement->execute();
-        $this->clearPrepare();
-        return $success;
     }
 
     /**
@@ -412,21 +415,34 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     public function getRawSql()
     {
-        $sqlPrepareData = $this->_sqlPrepareData;
-        if (count($sqlPrepareData) > 1) {
-            list($sql, $params, $values) = $sqlPrepareData;
-            $values = static::quotes($values);
-            $params = static::quotes($params);
-            // 先处理 values，避免 params 中包含 ? 号污染结果
-            $sql = vsprintf(str_replace('?', '%s', $sql), $values);
-            // 处理 params
-            foreach ($params as $key => $value) {
-                $key = substr($key, 0, 1) == ':' ? $key : ":{$key}";
-                $sql = str_replace($key, $value, $sql);
-            }
+        list($sql, $params, $values) = $this->_queryData;
+        if (empty($params) && empty($values)) {
             return $sql;
         }
-        return array_shift($sqlPrepareData);
+        $values = static::quotes($values);
+        $params = static::quotes($params);
+        // 先处理 values，避免 params 中包含 ? 号污染结果
+        $sql = vsprintf(str_replace('?', '%s', $sql), $values);
+        // 处理 params
+        foreach ($params as $key => $value) {
+            $key = substr($key, 0, 1) == ':' ? $key : ":{$key}";
+            $sql = str_replace($key, $value, $sql);
+        }
+        return $sql;
+    }
+
+    /**
+     * 获取查询日志
+     * @return array
+     */
+    public function getQueryLog()
+    {
+        list($sql, $params, $values, $time) = $this->_queryData;
+        return [
+            'sql'      => $sql,
+            'bindings' => $values ?: $params,
+            'time'     => round($time, 2),
+        ];
     }
 
     /**
