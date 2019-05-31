@@ -40,7 +40,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     public $driverOptions = [];
 
     /**
-     * @var \Mix\Database\QueryListenerInterface
+     * @var \Mix\Database\ExecuteListenerInterface
      */
     public $listener;
 

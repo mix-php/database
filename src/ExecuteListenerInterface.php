@@ -3,11 +3,11 @@
 namespace Mix\Database;
 
 /**
- * Interface QueryListenerInterface
+ * Interface ExecuteListenerInterface
  * @package Mix\Database
  * @author liu,jian <coder.keda@gmail.com>
  */
-interface QueryListenerInterface
+interface ExecuteListenerInterface
 {
 
     /**
