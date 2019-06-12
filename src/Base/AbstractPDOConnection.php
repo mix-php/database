@@ -57,12 +57,6 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     protected $_pdoStatement;
 
     /**
-     * sql片段
-     * @var array
-     */
-    protected $_sqlFragments = [];
-
-    /**
      * sql
      * @var string
      */
@@ -139,39 +133,38 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     }
 
     /**
-     * 构建查询
+     * 构建查询片段
      * @param array $item
-     * @return $this
+     * @return string|bool
      */
-    protected function buildQuery(array $item)
+    protected function buildQueryFragment(array $item)
     {
         if (isset($item['if']) && $item['if'] == false) {
-            return $this;
+            return false;
         }
         if (isset($item['params'])) {
             $this->bindParams($item['params']);
         }
-        $this->_sqlFragments[] = array_shift($item);
-        return $this;
+        return array_shift($item);
     }
 
     /**
      * 准备执行语句
      * 为了兼容旧版本，保留这项功能
-     * @param null $sql
+     * @param $sql
      * @return $this
      */
-    public function createCommand($sql = null)
+    public function createCommand($sql)
     {
         return $this->prepare($sql);
     }
 
     /**
      * 准备执行语句
-     * @param null $sql
+     * @param $sql
      * @return $this
      */
-    public function prepare($sql = null)
+    public function prepare($sql)
     {
         // 清扫数据
         $this->_sql    = '';
@@ -183,16 +176,15 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
         }
         // 数组构建
         if (is_array($sql)) {
+            $fragments = [];
             foreach ($sql as $item) {
-                $this->buildQuery($item);
+                $fragment = $this->buildQueryFragment($item);
+                if ($fragment) {
+                    $fragments[] = $fragments;
+                }
             }
-            $this->_sql = implode(' ', $this->_sqlFragments);
+            $this->_sql = implode(' ', $fragments);
         }
-        if (is_null($sql)) {
-            $this->_sql = implode(' ', $this->_sqlFragments);
-        }
-        // 清扫数据
-        $this->_sqlFragments = [];
         // 保存SQL
         $this->_queryData = [$this->_sql, [], [], 0];
         // 返回
@@ -440,6 +432,16 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     public function getRowCount()
     {
         return $this->_pdoStatement->rowCount();
+    }
+
+    /**
+     * 返回最后的SQL语句
+     * 为了兼容旧版本，保留这项功能
+     * @return string
+     */
+    public function getRawSql()
+    {
+        return $this->getLastSql();
     }
 
     /**

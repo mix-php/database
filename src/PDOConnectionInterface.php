@@ -19,17 +19,17 @@ interface PDOConnectionInterface
     /**
      * 准备执行语句
      * 为了兼容旧版本，保留这项功能
-     * @param null $sql
+     * @param $sql
      * @return $this
      */
-    public function createCommand($sql = null);
+    public function createCommand($sql);
 
     /**
      * 准备执行语句
-     * @param null $sql
+     * @param $sql
      * @return $this
      */
-    public function prepare($sql = null);
+    public function prepare($sql);
 
     /**
      * 绑定参数
@@ -86,6 +86,13 @@ interface PDOConnectionInterface
      * @return int
      */
     public function getRowCount();
+
+    /**
+     * 返回最后的SQL语句
+     * 为了兼容旧版本，保留这项功能
+     * @return string
+     */
+    public function getRawSql();
 
     /**
      * 返回最后的SQL语句
