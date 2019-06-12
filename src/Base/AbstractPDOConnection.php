@@ -156,11 +156,22 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     }
 
     /**
-     * 创建命令
+     * 准备执行语句
+     * 为了兼容旧版本，保留这项功能
      * @param null $sql
      * @return $this
      */
     public function createCommand($sql = null)
+    {
+        return $this->prepare($sql);
+    }
+
+    /**
+     * 准备执行语句
+     * @param null $sql
+     * @return $this
+     */
+    public function prepare($sql = null)
     {
         // 清扫数据
         $this->_sql    = '';
@@ -195,7 +206,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     public function bindParams(array $data)
     {
-        $this->_params += $data;
+        $this->_params = array_merge($this->_params, $data);
         return $this;
     }
 
@@ -206,7 +217,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     protected function bindValues(array $data)
     {
-        $this->_values += $data;
+        $this->_values = array_merge($this->_values, $data);
         return $this;
     }
 
@@ -269,9 +280,9 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     }
 
     /**
-     * 预处理
+     * 构建查询
      */
-    protected function prepare()
+    protected function build()
     {
         // 自动连接
         $this->autoConnect();
@@ -307,9 +318,9 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     }
 
     /**
-     * 清扫预处理数据
+     * 清扫构建查询数据
      */
-    protected function clearPrepare()
+    protected function clearBuild()
     {
         $this->_sql    = '';
         $this->_params = [];
@@ -343,15 +354,15 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     public function execute()
     {
-        // 预处理
-        $this->prepare();
+        // 构建查询
+        $this->build();
         // 执行
         $microtime           = static::microtime();
         $success             = $this->_pdoStatement->execute();
         $time                = round((static::microtime() - $microtime) * 1000, 2);
         $this->_queryData[3] = $time;
         // 清扫
-        $this->clearPrepare();
+        $this->clearBuild();
         // 执行监听器
         $this->runListener();
         // 返回
@@ -496,7 +507,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
             return ":{$key}";
         }, $keys);
         $sql    = "INSERT INTO `{$table}` (`" . implode('`, `', $keys) . "`) VALUES (" . implode(', ', $fields) . ")";
-        $this->createCommand($sql);
+        $this->prepare($sql);
         $this->bindParams($data);
         return $this;
     }
@@ -527,7 +538,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
             $subSql[] = "(" . implode(', ', $tmp) . ")";
         }
         $sql .= implode(', ', $subSql);
-        $this->createCommand($sql);
+        $this->prepare($sql);
         $this->bindValues($values);
         return $this;
     }
@@ -543,7 +554,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     {
         list($dataSql, $dataParams) = BuildHelper::buildData($data);
         list($whereSql, $whereParams) = BuildHelper::buildWhere($where);
-        $this->createCommand([
+        $this->prepare([
             ["UPDATE `{$table}`"],
             ["SET {$dataSql}", 'params' => $dataParams],
             ["WHERE {$whereSql}", 'params' => $whereParams],
@@ -560,7 +571,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
     public function delete(string $table, array $where)
     {
         list($sql, $params) = BuildHelper::buildWhere($where);
-        $this->createCommand([
+        $this->prepare([
             ["DELETE FROM `{$table}`"],
             ["WHERE {$sql}", 'params' => $params],
         ]);

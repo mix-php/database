@@ -44,6 +44,7 @@ class BuildHelper
         $params = [];
         foreach ($where as $key => $item) {
             $id++;
+            $prefix = "__{$id}_";
             $length = count($item);
             if ($length == 2) {
                 // 子条件
@@ -71,28 +72,41 @@ class BuildHelper
                 }
             }
             if ($length == 3) {
-                // 标准条件 (包含In/NotIn)
+                // 标准条件 (包含In/NotIn/Between/NotBetween)
                 list($field, $operator, $condition) = $item;
+                $in      = in_array(strtoupper($operator), ['IN', 'NOT IN']);
+                $between = in_array(strtoupper($operator), ['BETWEEN', 'NOT BETWEEN']);
                 if (
                     (is_string($field) && is_string($operator) && is_scalar($condition)) ||
-                    (is_string($field) && in_array(strtoupper($operator), ['IN', 'NOT IN']) && is_array($condition))
+                    (is_string($field) && ($in || $between) && is_array($condition))
                 ) {
-                    $prefix   = "__{$id}_";
+
                     $name     = $prefix . str_replace('.', '_', $field);
                     $operator = strtoupper($operator);
                     if (!is_array($condition)) {
-                        $subSql = "{$field} {$operator} :{$name}";
+                        $subSql        = "{$field} {$operator} :{$name}";
+                        $params[$name] = $condition;
                     } else {
-                        $subSql = "{$field} {$operator} (:{$name})";
+                        if ($in) {
+                            $subSql        = "{$field} {$operator} (:{$name})";
+                            $params[$name] = $condition;
+                        }
+                        if ($between) {
+                            $name1  = $prefix . 's_' . str_replace('.', '_', $field);
+                            $name2  = $prefix . 'e_' . str_replace('.', '_', $field);
+                            $subSql = "{$field} {$operator} :{$name1} AND :{$name2}";
+                            list($condition1, $condition2) = $condition;
+                            $params[$name1] = $condition1;
+                            $params[$name2] = $condition2;
+                        }
                     }
                     $sql .= " AND {$subSql}";
                     if ($key == 0) {
                         $sql = $subSql;
                     }
-                    $params[$name] = $condition;
                 }
             }
-            if ($length == 4) {
+            if ($length == 4) { // 为了兼容旧版本，保留这项功能
                 // Between/NotBetween
                 list($field, $operator, $condition1, $condition2) = $item;
                 if (
@@ -101,7 +115,6 @@ class BuildHelper
                     is_scalar($condition1) &&
                     is_scalar($condition2)
                 ) {
-                    $prefix   = "__{$id}_";
                     $name1    = $prefix . '1_' . str_replace('.', '_', $field);
                     $name2    = $prefix . '2_' . str_replace('.', '_', $field);
                     $operator = strtoupper($operator);

@@ -17,11 +17,19 @@ interface PDOConnectionInterface
     public function disconnect();
 
     /**
-     * 创建命令
+     * 准备执行语句
+     * 为了兼容旧版本，保留这项功能
      * @param null $sql
      * @return $this
      */
     public function createCommand($sql = null);
+
+    /**
+     * 准备执行语句
+     * @param null $sql
+     * @return $this
+     */
+    public function prepare($sql = null);
 
     /**
      * 绑定参数
