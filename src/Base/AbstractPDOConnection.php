@@ -180,7 +180,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
             foreach ($sql as $item) {
                 $fragment = $this->buildQueryFragment($item);
                 if ($fragment) {
-                    $fragments[] = $fragments;
+                    $fragments[] = $fragment;
                 }
             }
             $this->_sql = implode(' ', $fragments);
