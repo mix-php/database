@@ -11,6 +11,23 @@ class BuildHelper
 {
 
     /**
+     * 是否为多个条件
+     * @param $where
+     * @return bool
+     */
+    public static function isMulti($where)
+    {
+        $multi = true;
+        foreach ($where as $item) {
+            if (!is_array($item)) {
+                $multi = false;
+                break;
+            }
+        }
+        return $multi;
+    }
+
+    /**
      * 构建数据
      * @param array $data
      * @return array

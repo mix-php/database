@@ -160,14 +160,7 @@ class QueryBuilder
      */
     public function where(array $where)
     {
-        $multi = true;
-        foreach ($where as $item) {
-            if (!is_array($item)) {
-                $multi = false;
-                break;
-            }
-        }
-        if (!$multi) {
+        if (!BuildHelper::isMulti($where)) {
             array_push($this->_where, $where);
         } else {
             $this->_where = array_merge($this->_where, $where);

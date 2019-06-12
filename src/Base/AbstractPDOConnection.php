@@ -552,6 +552,9 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     public function update(string $table, array $data, array $where)
     {
+        if (!BuildHelper::isMulti($where)) {
+            $where = [$where];
+        }
         list($dataSql, $dataParams) = BuildHelper::buildData($data);
         list($whereSql, $whereParams) = BuildHelper::buildWhere($where);
         $this->prepare([
@@ -570,6 +573,9 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      */
     public function delete(string $table, array $where)
     {
+        if (!BuildHelper::isMulti($where)) {
+            $where = [$where];
+        }
         list($sql, $params) = BuildHelper::buildWhere($where);
         $this->prepare([
             ["DELETE FROM `{$table}`"],
