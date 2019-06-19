@@ -240,13 +240,13 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      * @param $params
      * @return array
      */
-    protected static function bindArrayParams($sql, $params)
+    protected function bindArrayParams($sql, $params)
     {
         foreach ($params as $key => $item) {
             if (is_array($item)) {
                 unset($params[$key]);
                 $key = substr($key, 0, 1) == ':' ? $key : ":{$key}";
-                $sql = str_replace($key, implode(', ', static::quotes($item)), $sql);
+                $sql = str_replace($key, implode(', ', $this->quotes($item)), $sql);
             }
         }
         return [$sql, $params];
@@ -289,7 +289,7 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
                 }
             }
             // 有参数
-            list($sql, $params) = static::bindArrayParams($this->_sql, $this->_params);
+            list($sql, $params) = $this->bindArrayParams($this->_sql, $this->_params);
             $this->_pdoStatement = $this->_pdo->prepare($sql);
             $this->_queryData    = [$sql, $params, [], 0]; // 必须在 bindParam 前，才能避免类型被转换
             foreach ($params as $key => &$value) {
@@ -454,8 +454,8 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
         if (empty($params) && empty($values)) {
             return $sql;
         }
-        $values = static::quotes($values);
-        $params = static::quotes($params);
+        $values = $this->quotes($values);
+        $params = $this->quotes($params);
         // 先处理 values，避免 params 中包含 ? 号污染结果
         $sql = vsprintf(str_replace('?', '%s', $sql), $values);
         // 处理 params
@@ -485,15 +485,15 @@ abstract class AbstractPDOConnection extends AbstractComponent implements PDOCon
      * @param $var
      * @return array|string
      */
-    protected static function quotes($var)
+    protected function quotes($var)
     {
         if (is_array($var)) {
             foreach ($var as $k => $v) {
-                $var[$k] = static::quotes($v);
+                $var[$k] = $this->quotes($v);
             }
             return $var;
         }
-        return is_string($var) ? "'{$var}'" : $var;
+        return is_string($var) ? $this->_pdo->quote($var) : $var;
     }
 
     /**
