@@ -2,7 +2,7 @@
 
 namespace Mix\Database\Base;
 
-use Mix\Core\Component\AbstractComponent;
+use Mix\Component\AbstractComponent;
 use Mix\Database\PDOConnectionInterface;
 use Mix\Database\Query\BuildHelper;
 use Mix\Database\Query\Expression;
