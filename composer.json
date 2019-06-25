@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": ">=7.0.0",
-    "mix/framework": "v2.1.x-dev",
+    "mix/bean": "v2.1.x-dev",
     "mix/pool": "v2.1.x-dev"
   },
   "autoload": {
