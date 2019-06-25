@@ -96,7 +96,6 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
      */
     protected $_driverOptions = [];
 
-
     /**
      * Authorization constructor.
      * @param array $config
@@ -105,6 +104,16 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
     {
         BeanInjector::inject($this, $config);
         $this->init();
+    }
+
+    /**
+     * 析构
+     */
+    public function __destruct()
+    {
+        // TODO: Implement __destruct() method.
+        // 关闭连接
+        $this->disconnect();
     }
 
     /**
