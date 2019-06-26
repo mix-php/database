@@ -238,9 +238,9 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
      */
     public function inTransaction()
     {
-        /** @var  $Pdo \PDO */
-        $Pdo = $this->_pdo;
-        return (bool)($Pdo ? $Pdo->inTransaction() : false);
+        /** @var  $pdo \PDO */
+        $pdo = $this->_pdo;
+        return (bool)($pdo ? $pdo->inTransaction() : false);
     }
 
     /**

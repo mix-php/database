@@ -88,7 +88,7 @@ class PDOConnection extends AbstractPDOConnection
             // 执行父类方法
             return call_user_func_array("parent::{$name}", $arguments);
         } catch (\Throwable $e) {
-            if (static::isDisconnectException($e)) {
+            if (static::isDisconnectException($e) && !$this->inTransaction()) {
                 // 断开连接异常处理
                 $this->reconnect();
                 // 重新执行方法
