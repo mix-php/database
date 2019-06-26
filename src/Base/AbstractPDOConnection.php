@@ -107,6 +107,15 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
     }
 
     /**
+     * 初始化
+     */
+    public function init()
+    {
+        // 设置驱动连接选项
+        $this->_driverOptions = $this->driverOptions + $this->_defaultDriverOptions;
+    }
+
+    /**
      * 析构
      */
     public function __destruct()
@@ -114,15 +123,6 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
         // TODO: Implement __destruct() method.
         // 关闭连接
         $this->disconnect();
-    }
-
-    /**
-     * 初始化
-     */
-    public function init()
-    {
-        // 设置驱动连接选项
-        $this->_driverOptions = $this->driverOptions + $this->_defaultDriverOptions;
     }
 
     /**
