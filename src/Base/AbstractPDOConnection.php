@@ -97,22 +97,14 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
     protected $_driverOptions = [];
 
     /**
-     * Authorization constructor.
+     * AbstractPDOConnection constructor.
      * @param array $config
+     * @throws \PhpDocReader\AnnotationException
+     * @throws \ReflectionException
      */
-    public function __construct(array $config)
+    public function __construct(array $config = [])
     {
         BeanInjector::inject($this, $config);
-        $this->init();
-    }
-
-    /**
-     * 初始化
-     */
-    public function init()
-    {
-        // 设置驱动连接选项
-        $this->_driverOptions = $this->driverOptions + $this->_defaultDriverOptions;
     }
 
     /**
@@ -126,6 +118,15 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
     }
 
     /**
+     * 驱动连接选项
+     * @return array
+     */
+    protected function getDriverOptions()
+    {
+        return $this->driverOptions + $this->_defaultDriverOptions;
+    }
+
+    /**
      * 创建连接
      * @return \PDO
      */
@@ -135,7 +136,7 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
             $this->dsn,
             $this->username,
             $this->password,
-            $this->_driverOptions
+            $this->getDriverOptions()
         );
         return $pdo;
     }
@@ -397,7 +398,7 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
     public function queryOne()
     {
         $this->execute();
-        return $this->_pdoStatement->fetch($this->_driverOptions[\PDO::ATTR_DEFAULT_FETCH_MODE]);
+        return $this->_pdoStatement->fetch($this->getDriverOptions()[\PDO::ATTR_DEFAULT_FETCH_MODE]);
     }
 
     /**
