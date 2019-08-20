@@ -17,6 +17,7 @@
   ],
   "require": {
     "php": ">=7.0.0",
+    "ext-pdo": "*",
     "mix/bean": "v2.1.x-dev",
     "mix/pool": "v2.1.x-dev"
   },
