@@ -5,7 +5,8 @@ namespace Mix\Database\MasterSlave;
 use Mix\Database\Base\AbstractPDOConnection;
 
 /**
- * PdoMasterSlave组件
+ * Class PDOConnection
+ * @package Mix\Database\MasterSlave
  * @author liu,jian <coder.keda@gmail.com>
  */
 class PDOConnection extends AbstractPDOConnection

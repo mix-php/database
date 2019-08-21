@@ -5,7 +5,8 @@ namespace Mix\Database\Persistent;
 use Mix\Database\Base\AbstractPDOConnection;
 
 /**
- * PdoPersistent组件
+ * Class PDOConnection
+ * @package Mix\Database\Persistent
  * @author liu,jian <coder.keda@gmail.com>
  */
 class PDOConnection extends AbstractPDOConnection
