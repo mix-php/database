@@ -3,10 +3,12 @@
 namespace Mix\Database\Base;
 
 use Mix\Bean\BeanInjector;
+use Mix\Database\Event\ExecuteEvent;
 use Mix\Database\PDOConnectionInterface;
 use Mix\Database\Query\BuildHelper;
 use Mix\Database\Query\Expression;
 use Mix\Database\QueryBuilder;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class AbstractPDOConnection
@@ -40,9 +42,10 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
     public $driverOptions = [];
 
     /**
-     * @var \Mix\Database\ExecuteListenerInterface
+     * 事件调度器
+     * @var EventDispatcherInterface
      */
-    public $listener;
+    public $eventDispatcher;
 
     /**
      * PDO
@@ -350,14 +353,19 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
     }
 
     /**
-     * 执行监听器
+     * 调度执行事件
      */
-    protected function runListener()
+    protected function dispatchExecuteEvent()
     {
-        if (!$this->listener) {
+        if (!$this->eventDispatcher) {
             return;
         }
-        $this->listener->listen($this->getLastLog());
+        $log             = $this->getLastLog();
+        $event           = new ExecuteEvent();
+        $event->sql      = $log['sql'];
+        $event->bindings = $log['bindings'];
+        $event->time     = $log['time'];
+        $this->eventDispatcher->dispatch($event);
     }
 
     /**
@@ -375,8 +383,8 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
         $this->_queryData[3] = $time;
         // 清扫
         $this->clearBuild();
-        // 执行监听器
-        $this->runListener();
+        // 调度执行事件
+        $this->dispatchExecuteEvent();
         // 返回
         return $success;
     }
