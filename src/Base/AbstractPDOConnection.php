@@ -39,7 +39,7 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
      * 驱动连接选项
      * @var array
      */
-    public $driverOptions = [];
+    public $attributes = [];
 
     /**
      * 事件调度器
@@ -87,7 +87,7 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
      * 默认驱动连接选项
      * @var array
      */
-    protected $_defaultDriverOptions = [
+    protected $_defaultAttributes = [
         \PDO::ATTR_EMULATE_PREPARES   => false,
         \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
         \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
@@ -97,7 +97,7 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
      * 驱动连接选项
      * @var array
      */
-    protected $_driverOptions = [];
+    protected $_attributes = [];
 
     /**
      * AbstractPDOConnection constructor.
@@ -124,9 +124,9 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
      * 驱动连接选项
      * @return array
      */
-    protected function getDriverOptions()
+    protected function getAttributes()
     {
-        return $this->driverOptions + $this->_defaultDriverOptions;
+        return $this->attributes + $this->_defaultAttributes;
     }
 
     /**
@@ -139,7 +139,7 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
             $this->dsn,
             $this->username,
             $this->password,
-            $this->getDriverOptions()
+            $this->getAttributes()
         );
         return $pdo;
     }
@@ -406,7 +406,7 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
     public function queryOne()
     {
         $this->execute();
-        return $this->_pdoStatement->fetch($this->getDriverOptions()[\PDO::ATTR_DEFAULT_FETCH_MODE]);
+        return $this->_pdoStatement->fetch($this->getAttributes()[\PDO::ATTR_DEFAULT_FETCH_MODE]);
     }
 
     /**
