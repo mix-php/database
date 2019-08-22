@@ -145,6 +145,19 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
     }
 
     /**
+     * 连接
+     * @return bool
+     */
+    public function connect()
+    {
+        if (isset($this->_pdo)) {
+            return true;
+        }
+        $this->_pdo = $this->createConnection();
+        return true;
+    }
+
+    /**
      * 关闭连接
      * @return bool
      */
@@ -276,31 +289,12 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
     }
 
     /**
-     * 连接
-     */
-    protected function connect()
-    {
-        $this->_pdo = $this->createConnection();
-    }
-
-    /**
-     * 自动连接
-     */
-    protected function autoConnect()
-    {
-        if (isset($this->_pdo)) {
-            return;
-        }
-        $this->connect();
-    }
-
-    /**
      * 构建查询
      */
     protected function build()
     {
-        // 自动连接
-        $this->autoConnect();
+        // 连接
+        $this->connect();
         // 准备与参数绑定
         if (!empty($this->_params)) {
             // 原始方法
@@ -639,8 +633,8 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
      */
     public function beginTransaction()
     {
-        // 自动连接
-        $this->autoConnect();
+        // 连接
+        $this->connect();
         // 开始事务
         return $this->_pdo->beginTransaction();
     }

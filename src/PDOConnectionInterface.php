@@ -11,6 +11,12 @@ interface PDOConnectionInterface
 {
 
     /**
+     * 连接
+     * @return bool
+     */
+    public function connect();
+    
+    /**
      * 关闭连接
      * @return bool
      */
