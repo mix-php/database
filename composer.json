@@ -19,8 +19,8 @@
     "php": ">=7.0.0",
     "ext-pdo": "*",
     "psr/event-dispatcher": "^1.0",
-    "mix/bean": "v2.1.x-dev",
-    "mix/pool": "v2.1.x-dev"
+    "mix/bean": "v2.1.0-beta",
+    "mix/pool": "v2.1.0-beta"
   },
   "autoload": {
     "psr-4": {
