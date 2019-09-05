@@ -16,7 +16,7 @@ class QueryBuilder
 
     /**
      * 连接
-     * @var PDOConnectionInterface
+     * @var ConnectionInterface
      */
     public $connection;
 
@@ -67,19 +67,19 @@ class QueryBuilder
 
     /**
      * 使用静态方法创建实例
-     * @param PDOConnectionInterface $db
+     * @param ConnectionInterface $db
      * @return QueryBuilder
      */
-    public static function new(PDOConnectionInterface $connection)
+    public static function new(ConnectionInterface $connection)
     {
         return new static($connection);
     }
 
     /**
      * QueryBuilder constructor.
-     * @param PDOConnectionInterface $db
+     * @param ConnectionInterface $db
      */
-    public function __construct(PDOConnectionInterface $connection)
+    public function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
     }
@@ -231,7 +231,7 @@ class QueryBuilder
 
     /**
      * 预处理
-     * @return PDOConnectionInterface
+     * @return ConnectionInterface
      */
     public function prepare()
     {

@@ -2,14 +2,14 @@
 
 namespace Mix\Database\Persistent;
 
-use Mix\Database\Base\AbstractPDOConnection;
+use Mix\Database\Base\AbstractConnection;
 
 /**
- * Class PDOConnection
+ * Class Connection
  * @package Mix\Database\Persistent
  * @author liu,jian <coder.keda@gmail.com>
  */
-class PDOConnection extends AbstractPDOConnection
+class Connection extends AbstractConnection
 {
 
     /**

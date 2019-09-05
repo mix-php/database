@@ -3,11 +3,11 @@
 namespace Mix\Database;
 
 /**
- * Interface PDOConnectionInterface
+ * Interface ConnectionInterface
  * @package Mix\Database
  * @author liu,jian <coder.keda@gmail.com>
  */
-interface PDOConnectionInterface
+interface ConnectionInterface
 {
 
     /**

@@ -4,18 +4,18 @@ namespace Mix\Database\Base;
 
 use Mix\Bean\BeanInjector;
 use Mix\Database\Event\ExecuteEvent;
-use Mix\Database\PDOConnectionInterface;
+use Mix\Database\ConnectionInterface;
 use Mix\Database\Query\BuildHelper;
 use Mix\Database\Query\Expression;
 use Mix\Database\QueryBuilder;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Class AbstractPDOConnection
+ * Class AbstractConnection
  * @package Mix\Database\Base
  * @author liu,jian <coder.keda@gmail.com>
  */
-abstract class AbstractPDOConnection implements PDOConnectionInterface
+abstract class AbstractConnection implements ConnectionInterface
 {
 
     /**
@@ -100,7 +100,7 @@ abstract class AbstractPDOConnection implements PDOConnectionInterface
     protected $_attributes = [];
 
     /**
-     * AbstractPDOConnection constructor.
+     * AbstractConnection constructor.
      * @param array $config
      * @throws \PhpDocReader\AnnotationException
      * @throws \ReflectionException

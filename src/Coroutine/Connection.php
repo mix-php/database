@@ -5,11 +5,11 @@ namespace Mix\Database\Coroutine;
 use Mix\Pool\ConnectionTrait;
 
 /**
- * Class PDOConnection
+ * Class Connection
  * @package Mix\Database\Coroutine
  * @author liu,jian <coder.keda@gmail.com>
  */
-class PDOConnection extends \Mix\Database\Persistent\PDOConnection
+class Connection extends \Mix\Database\Persistent\Connection
 {
 
     use ConnectionTrait;

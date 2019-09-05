@@ -15,7 +15,7 @@ class ConnectionPool extends AbstractConnectionPool implements ConnectionPoolInt
 
     /**
      * 获取连接
-     * @return \Mix\Database\Coroutine\PDOConnection
+     * @return \Mix\Database\Coroutine\Connection
      */
     public function getConnection()
     {
