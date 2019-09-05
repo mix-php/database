@@ -24,14 +24,6 @@ interface ConnectionInterface
 
     /**
      * 准备执行语句
-     * 为了兼容旧版本，保留这项功能
-     * @param $sql
-     * @return $this
-     */
-    public function createCommand($sql);
-
-    /**
-     * 准备执行语句
      * @param $sql
      * @return $this
      */
@@ -92,13 +84,6 @@ interface ConnectionInterface
      * @return int
      */
     public function getRowCount();
-
-    /**
-     * 返回最后的SQL语句
-     * 为了兼容旧版本，保留这项功能
-     * @return string
-     */
-    public function getRawSql();
 
     /**
      * 返回最后的SQL语句

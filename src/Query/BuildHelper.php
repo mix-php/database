@@ -123,27 +123,6 @@ class BuildHelper
                     }
                 }
             }
-            if ($length == 4) { // 为了兼容旧版本，保留这项功能
-                // Between/NotBetween
-                list($field, $operator, $condition1, $condition2) = $item;
-                if (
-                    is_string($field) &&
-                    in_array(strtoupper($operator), ['BETWEEN', 'NOT BETWEEN']) &&
-                    is_scalar($condition1) &&
-                    is_scalar($condition2)
-                ) {
-                    $name1    = $prefix . '1_' . str_replace('.', '_', $field);
-                    $name2    = $prefix . '2_' . str_replace('.', '_', $field);
-                    $operator = strtoupper($operator);
-                    $subSql   = "{$field} {$operator} :{$name1} AND :{$name2}";
-                    $sql      .= " AND {$subSql}";
-                    if ($key == 0) {
-                        $sql = $subSql;
-                    }
-                    $params[$name1] = $condition1;
-                    $params[$name2] = $condition2;
-                }
-            }
         }
         return [$sql, $params];
     }
