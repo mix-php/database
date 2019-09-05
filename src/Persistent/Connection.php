@@ -2,14 +2,12 @@
 
 namespace Mix\Database\Persistent;
 
-use Mix\Database\Base\AbstractConnection;
-
 /**
  * Class Connection
  * @package Mix\Database\Persistent
  * @author liu,jian <coder.keda@gmail.com>
  */
-class Connection extends AbstractConnection
+class Connection extends \Mix\Database\Connection
 {
 
     /**
