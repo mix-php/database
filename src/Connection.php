@@ -248,7 +248,7 @@ class Connection implements ConnectionInterface
     /**
      * 返回一个RawQuery对象，对象的值将不经过参数绑定，直接解释为SQL的一部分，适合传递数据库原生函数
      * @param string $value
-     * @return \Mix\Database\Query\Expression
+     * @return Expression
      */
     public static function raw(string $value)
     {
