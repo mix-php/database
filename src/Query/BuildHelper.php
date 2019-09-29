@@ -97,7 +97,7 @@ class BuildHelper
                     (is_string($field) && is_string($operator) && is_scalar($condition)) ||
                     (is_string($field) && ($in || $between) && is_array($condition))
                 ) {
-
+                    $subSql   = '';
                     $name     = $prefix . str_replace('.', '_', $field);
                     $operator = strtoupper($operator);
                     if (!is_array($condition)) {

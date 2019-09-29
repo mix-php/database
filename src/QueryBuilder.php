@@ -3,8 +3,6 @@
 namespace Mix\Database;
 
 use Mix\Database\Query\BuildHelper;
-use Mix\Database\Query\Expression;
-use Mix\Pool\ConnectionPoolInterface;
 
 /**
  * Class QueryBuilder
@@ -67,7 +65,7 @@ class QueryBuilder
 
     /**
      * 使用静态方法创建实例
-     * @param ConnectionInterface $db
+     * @param ConnectionInterface $connection
      * @return QueryBuilder
      */
     public static function new(ConnectionInterface $connection)
@@ -77,7 +75,7 @@ class QueryBuilder
 
     /**
      * QueryBuilder constructor.
-     * @param ConnectionInterface $db
+     * @param ConnectionInterface $connection
      */
     public function __construct(ConnectionInterface $connection)
     {
@@ -110,6 +108,7 @@ class QueryBuilder
      * join
      * @param string $table
      * @param array $on
+     * @return $this
      */
     public function join(string $table, array $on)
     {
@@ -275,7 +274,6 @@ class QueryBuilder
         // having
         if ($this->_having) {
             $subSql = [];
-            $having = $this->_having;
             foreach ($this->_having as $item) {
                 list($field, $operator, $condition) = $item;
                 $subSql[] = "{$field} {$operator} {$condition}";
