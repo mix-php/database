@@ -1,38 +1,21 @@
 <?php
 
-namespace Mix\Database\Query;
+namespace Mix\Database\Helper;
 
 /**
  * Class BuildHelper
- * @package Mix\Database\Query
+ * @package Mix\Database\Helper
  * @author liu,jian <coder.keda@gmail.com>
  */
 class BuildHelper
 {
 
     /**
-     * 是否为多个条件
-     * @param $where
-     * @return bool
-     */
-    public static function isMulti($where)
-    {
-        $multi = true;
-        foreach ($where as $item) {
-            if (!is_array($item)) {
-                $multi = false;
-                break;
-            }
-        }
-        return $multi;
-    }
-
-    /**
      * 构建数据
      * @param array $data
      * @return array
      */
-    public static function buildData(array $data)
+    public static function data(array $data)
     {
         $sql    = [];
         $params = [];
@@ -55,7 +38,7 @@ class BuildHelper
      * @param int $id
      * @return array
      */
-    public static function buildWhere(array $where, &$id = null)
+    public static function where(array $where, &$id = null)
     {
         $sql    = '';
         $params = [];
@@ -132,7 +115,7 @@ class BuildHelper
      * @param array $on
      * @return string
      */
-    public static function buildJoinOn(array $on)
+    public static function joinOn(array $on)
     {
         $sql = '';
         if (count($on) == count($on, 1)) {

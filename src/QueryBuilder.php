@@ -2,7 +2,8 @@
 
 namespace Mix\Database;
 
-use Mix\Database\Query\BuildHelper;
+use Mix\Database\Helper\WhereHelper;
+use Mix\Database\Helper\BuildHelper;
 
 /**
  * Class QueryBuilder
@@ -159,7 +160,7 @@ class QueryBuilder
      */
     public function where(array $where)
     {
-        if (!BuildHelper::isMulti($where)) {
+        if (!WhereHelper::isMulti($where)) {
             array_push($this->_where, $where);
         } else {
             $this->_where = array_merge($this->_where, $where);
@@ -249,13 +250,13 @@ class QueryBuilder
         if ($this->_join) {
             foreach ($this->_join as $item) {
                 list($type, $table, $on) = $item;
-                $condition = BuildHelper::buildJoinOn($on);
+                $condition = BuildHelper::joinOn($on);
                 $sql[]     = ["{$type} {$table} ON {$condition}"];
             }
         }
         // where
         if ($this->_where) {
-            list($subSql, $subParams) = BuildHelper::buildWhere($this->_where);
+            list($subSql, $subParams) = BuildHelper::where($this->_where);
             $sql[] = ["WHERE {$subSql}", 'params' => $subParams];
         }
         // orderBy

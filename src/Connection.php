@@ -4,7 +4,8 @@ namespace Mix\Database;
 
 use Mix\Bean\BeanInjector;
 use Mix\Database\Event\ExecuteEvent;
-use Mix\Database\Query\BuildHelper;
+use Mix\Database\Helper\WhereHelper;
+use Mix\Database\Helper\BuildHelper;
 use Mix\Database\Query\Expression;
 use Mix\Database\QueryBuilder;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -551,11 +552,11 @@ class Connection implements ConnectionInterface
      */
     public function update(string $table, array $data, array $where)
     {
-        if (!BuildHelper::isMulti($where)) {
+        if (!WhereHelper::isMulti($where)) {
             $where = [$where];
         }
-        list($dataSql, $dataParams) = BuildHelper::buildData($data);
-        list($whereSql, $whereParams) = BuildHelper::buildWhere($where);
+        list($dataSql, $dataParams) = BuildHelper::data($data);
+        list($whereSql, $whereParams) = BuildHelper::where($where);
         $this->prepare([
             ["UPDATE `{$table}`"],
             ["SET {$dataSql}", 'params' => $dataParams],
@@ -572,10 +573,10 @@ class Connection implements ConnectionInterface
      */
     public function delete(string $table, array $where)
     {
-        if (!BuildHelper::isMulti($where)) {
+        if (!WhereHelper::isMulti($where)) {
             $where = [$where];
         }
-        list($sql, $params) = BuildHelper::buildWhere($where);
+        list($sql, $params) = BuildHelper::where($where);
         $this->prepare([
             ["DELETE FROM `{$table}`"],
             ["WHERE {$sql}", 'params' => $params],
