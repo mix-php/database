@@ -7,7 +7,7 @@ namespace Mix\Database\Persistent;
  * @package Mix\Database\Persistent
  * @author liu,jian <coder.keda@gmail.com>
  */
-class Connection extends \Mix\Database\Connection
+class Connection extends \Mix\Database\AbstractConnection
 {
 
     /**
