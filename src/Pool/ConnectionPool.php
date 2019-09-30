@@ -2,7 +2,7 @@
 
 namespace Mix\Database\Pool;
 
-use Mix\Database\Coroutine\Connection;
+use Mix\Database\Connection;
 use Mix\Pool\ConnectionPoolInterface;
 use Mix\Pool\AbstractConnectionPool;
 

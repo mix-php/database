@@ -6,7 +6,7 @@ use Mix\Pool\ConnectionTrait;
 
 /**
  * Class Connection
- * @package Mix\Database\Coroutine
+ * @package Mix\Database
  * @author liu,jian <coder.keda@gmail.com>
  */
 class Connection extends \Mix\Database\Persistent\Connection
