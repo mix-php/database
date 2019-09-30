@@ -17,7 +17,7 @@ interface ConnectionInterface
      * @return bool
      */
     public function connect();
-    
+
     /**
      * 关闭连接
      * @return bool
@@ -176,5 +176,17 @@ interface ConnectionInterface
      * @return QueryBuilder
      */
     public function table(string $table);
+
+    /**
+     * 释放连接
+     * @return bool
+     */
+    public function release();
+
+    /**
+     * 丢弃连接
+     * @return bool
+     */
+    public function discard();
 
 }

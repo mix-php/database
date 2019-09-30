@@ -14,7 +14,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
  * @package Mix\Database
  * @author liu,jian <coder.keda@gmail.com>
  */
-abstract class AbstractConnection implements ConnectionInterface
+abstract class AbstractConnection
 {
 
     /**
