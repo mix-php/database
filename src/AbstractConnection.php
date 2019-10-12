@@ -371,22 +371,26 @@ abstract class AbstractConnection
 
     /**
      * 返回一行
+     * @param int $fetchStyle
      * @return mixed
      */
-    public function queryOne()
+    public function queryOne(int $fetchStyle = 0)
     {
         $this->execute();
-        return $this->_pdoStatement->fetch($this->getAttributes()[\PDO::ATTR_DEFAULT_FETCH_MODE]);
+        $fetchStyle = $fetchStyle ?: $this->getAttributes()[\PDO::ATTR_DEFAULT_FETCH_MODE];
+        return $this->_pdoStatement->fetch($fetchStyle);
     }
 
     /**
      * 返回多行
+     * @param int $fetchStyle
      * @return array
      */
-    public function queryAll()
+    public function queryAll(int $fetchStyle = 0)
     {
         $this->execute();
-        return $this->_pdoStatement->fetchAll();
+        $fetchStyle = $fetchStyle ?: $this->getAttributes()[\PDO::ATTR_DEFAULT_FETCH_MODE];
+        return $this->_pdoStatement->fetchAll($fetchStyle);
     }
 
     /**

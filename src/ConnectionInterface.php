@@ -46,15 +46,17 @@ interface ConnectionInterface
 
     /**
      * 返回一行
+     * @param int $fetchStyle
      * @return mixed
      */
-    public function queryOne();
+    public function queryOne(int $fetchStyle = 0);
 
     /**
      * 返回多行
+     * @param int $fetchStyle
      * @return array
      */
-    public function queryAll();
+    public function queryAll(int $fetchStyle = 0);
 
     /**
      * 返回一列 (第一列)
