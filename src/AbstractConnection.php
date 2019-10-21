@@ -148,7 +148,7 @@ abstract class AbstractConnection
      * 关闭连接
      * @return bool
      */
-    public function disconnect()
+    public function close()
     {
         $this->_pdoStatement = null;
         $this->_pdo          = null;

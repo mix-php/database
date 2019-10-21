@@ -22,7 +22,7 @@ interface ConnectionInterface
      * 关闭连接
      * @return bool
      */
-    public function disconnect();
+    public function close();
 
     /**
      * 准备执行语句
