@@ -23,20 +23,22 @@ class Connection extends AbstractConnection
 
     /**
      * 返回一行
+     * @param int $fetchStyle
      * @return mixed
      */
-    public function queryOne()
+    public function queryOne(int $fetchStyle = 0)
     {
-        return $this->call(__FUNCTION__);
+        return $this->call(__FUNCTION__, func_get_args());
     }
 
     /**
      * 返回多行
+     * @param int $fetchStyle
      * @return array
      */
-    public function queryAll()
+    public function queryAll(int $fetchStyle = 0)
     {
-        return $this->call(__FUNCTION__);
+        return $this->call(__FUNCTION__, func_get_args());
     }
 
     /**
@@ -135,7 +137,7 @@ class Connection extends AbstractConnection
      */
     protected function reconnect()
     {
-        $this->disconnect();
+        $this->close();
         $this->connect();
     }
 

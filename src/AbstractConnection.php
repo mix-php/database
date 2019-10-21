@@ -122,13 +122,12 @@ abstract class AbstractConnection
      */
     protected function createConnection()
     {
-        $pdo = new \PDO(
+        return new \PDO(
             $this->dsn,
             $this->username,
             $this->password,
             $this->getAttributes()
         );
-        return $pdo;
     }
 
     /**
@@ -137,9 +136,6 @@ abstract class AbstractConnection
      */
     public function connect()
     {
-        if (isset($this->_pdo)) {
-            return true;
-        }
         $this->_pdo = $this->createConnection();
         return true;
     }
@@ -269,10 +265,9 @@ abstract class AbstractConnection
      */
     protected function build()
     {
-        // 连接
-        $this->connect();
-        // 准备与参数绑定
+
         if (!empty($this->_params)) {
+            // 准备与参数绑定
             // 原始方法
             foreach ($this->_params as $key => $item) {
                 if ($item instanceof Expression) {
@@ -305,21 +300,11 @@ abstract class AbstractConnection
     /**
      * 清扫构建查询数据
      */
-    protected function clearBuild()
+    protected function clear()
     {
         $this->_sql    = '';
         $this->_params = [];
         $this->_values = [];
-    }
-
-    /**
-     * 获取微秒时间
-     * @return float
-     */
-    protected static function microtime()
-    {
-        list($usec, $sec) = explode(" ", microtime());
-        return ((float)$usec + (float)$sec);
     }
 
     /**
@@ -339,6 +324,16 @@ abstract class AbstractConnection
     }
 
     /**
+     * 获取微秒时间
+     * @return float
+     */
+    protected static function microtime()
+    {
+        list($usec, $sec) = explode(" ", microtime());
+        return ((float)$usec + (float)$sec);
+    }
+
+    /**
      * 执行SQL语句
      * @return bool
      */
@@ -352,7 +347,7 @@ abstract class AbstractConnection
         $time                = round((static::microtime() - $microtime) * 1000, 2);
         $this->_queryData[3] = $time;
         // 清扫
-        $this->clearBuild();
+        $this->clear();
         // 调度执行事件
         $this->dispatchExecuteEvent();
         // 返回
@@ -603,9 +598,6 @@ abstract class AbstractConnection
      */
     public function beginTransaction()
     {
-        // 连接
-        $this->connect();
-        // 开始事务
         return $this->_pdo->beginTransaction();
     }
 
