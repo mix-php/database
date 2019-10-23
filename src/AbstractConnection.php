@@ -266,7 +266,6 @@ abstract class AbstractConnection
      */
     protected function build()
     {
-
         if (!empty($this->_params)) {
             // 准备与参数绑定
             // 原始方法
