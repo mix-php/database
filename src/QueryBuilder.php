@@ -259,6 +259,20 @@ class QueryBuilder
             list($subSql, $subParams) = BuildHelper::buildWhere($this->_where);
             $sql[] = ["WHERE {$subSql}", 'params' => $subParams];
         }
+        // groupBy
+        if ($this->_groupBy) {
+            $sql[] = ["GROUP BY " . implode(', ', $this->_groupBy)];
+        }
+        // having
+        if ($this->_having) {
+            $subSql = [];
+            foreach ($this->_having as $item) {
+                list($field, $operator, $condition) = $item;
+                $subSql[] = "{$field} {$operator} {$condition}";
+            }
+            $subSql = count($subSql) == 1 ? array_pop($subSql) : implode(' AND ', $subSql);
+            $sql[]  = ["HAVING {$subSql}"];
+        }
         // orderBy
         if ($this->_orderBy) {
             $subSql = [];
@@ -267,21 +281,6 @@ class QueryBuilder
                 $subSql[] = "{$field} {$order}";
             }
             $sql[] = ["ORDER BY " . implode(', ', $subSql)];
-        }
-        // groupBy
-        if ($this->_groupBy) {
-            $sql[] = ["GROUP BY " . implode(', ', $this->_groupBy)];
-        }
-        // having
-        if ($this->_having) {
-            $subSql = [];
-            $having = $this->_having;
-            foreach ($this->_having as $item) {
-                list($field, $operator, $condition) = $item;
-                $subSql[] = "{$field} {$operator} {$condition}";
-            }
-            $subSql = count($subSql) == 1 ? array_pop($subSql) : implode(' AND ', $subSql);
-            $sql[]  = ["HAVING {$subSql}"];
         }
         // limit and offset
         if ($this->_limit > 0) {
