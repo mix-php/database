@@ -259,15 +259,6 @@ class QueryBuilder
             list($subSql, $subParams) = BuildHelper::where($this->_where);
             $sql[] = ["WHERE {$subSql}", 'params' => $subParams];
         }
-        // orderBy
-        if ($this->_orderBy) {
-            $subSql = [];
-            foreach ($this->_orderBy as $item) {
-                list($field, $order) = $item;
-                $subSql[] = "{$field} {$order}";
-            }
-            $sql[] = ["ORDER BY " . implode(', ', $subSql)];
-        }
         // groupBy
         if ($this->_groupBy) {
             $sql[] = ["GROUP BY " . implode(', ', $this->_groupBy)];
@@ -281,6 +272,15 @@ class QueryBuilder
             }
             $subSql = count($subSql) == 1 ? array_pop($subSql) : implode(' AND ', $subSql);
             $sql[]  = ["HAVING {$subSql}"];
+        }
+        // orderBy
+        if ($this->_orderBy) {
+            $subSql = [];
+            foreach ($this->_orderBy as $item) {
+                list($field, $order) = $item;
+                $subSql[] = "{$field} {$order}";
+            }
+            $sql[] = ["ORDER BY " . implode(', ', $subSql)];
         }
         // limit and offset
         if ($this->_limit > 0) {
