@@ -366,9 +366,9 @@ abstract class AbstractConnection
     /**
      * 返回一行
      * @param int $fetchStyle
-     * @return mixed
+     * @return array|object
      */
-    public function queryOne(int $fetchStyle = 0)
+    public function queryOne(int $fetchStyle = null)
     {
         $this->execute();
         $fetchStyle = $fetchStyle ?: $this->getAttributes()[\PDO::ATTR_DEFAULT_FETCH_MODE];
@@ -380,7 +380,7 @@ abstract class AbstractConnection
      * @param int $fetchStyle
      * @return array
      */
-    public function queryAll(int $fetchStyle = 0)
+    public function queryAll(int $fetchStyle = null)
     {
         $this->execute();
         $fetchStyle = $fetchStyle ?: $this->getAttributes()[\PDO::ATTR_DEFAULT_FETCH_MODE];
@@ -388,7 +388,7 @@ abstract class AbstractConnection
     }
 
     /**
-     * 返回一列 (第一列)
+     * 返回一列 (默认第一列)
      * @param int $columnNumber
      * @return array
      */
