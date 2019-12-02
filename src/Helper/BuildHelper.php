@@ -53,7 +53,7 @@ class BuildHelper
                     if (count($subWhere) == count($subWhere, 1)) {
                         $subWhere = [$subWhere];
                     }
-                    list($subSql, $subParams) = static::buildWhere($subWhere, $id);
+                    list($subSql, $subParams) = static::where($subWhere, $id);
                     if (count($subWhere) > 1) {
                         $subSql = "({$subSql})";
                     }
@@ -81,7 +81,7 @@ class BuildHelper
                     (is_string($field) && ($in || $between) && is_array($condition))
                 ) {
                     $subSql   = '';
-                    $name     = $prefix . str_replace('.', '_', $field);
+                    $name     = $prefix . str_replace(['.', '`'], ['_', ''], $field);
                     $operator = strtoupper($operator);
                     if (!is_array($condition)) {
                         $subSql        = "{$field} {$operator} :{$name}";
@@ -139,7 +139,7 @@ class BuildHelper
                 if (count($subOn) == count($subOn, 1)) {
                     $subOn = [$subOn];
                 }
-                $subSql = static::buildJoinOn($subOn);
+                $subSql = static::joinOn($subOn);
                 if (count($subOn) > 1) {
                     $subSql = "({$subSql})";
                 }
