@@ -3,11 +3,11 @@
 namespace Mix\Database\Event;
 
 /**
- * Class ExecuteEvent
+ * Class ExecutedEvent
  * @package Mix\Database\Event
  * @author liu,jian <coder.keda@gmail.com>
  */
-class ExecuteEvent
+class ExecutedEvent
 {
 
     /**
