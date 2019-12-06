@@ -3,7 +3,7 @@
 namespace Mix\Database;
 
 use Mix\Bean\BeanInjector;
-use Mix\Database\Event\ExecuteEvent;
+use Mix\Database\Event\ExecutedEvent;
 use Mix\Database\Helper\WhereHelper;
 use Mix\Database\Helper\BuildHelper;
 use Mix\Database\Query\Expression;
@@ -307,15 +307,15 @@ abstract class AbstractConnection
     }
 
     /**
-     * 调度执行事件
+     * 调度事件
      */
-    protected function dispatchExecuteEvent()
+    protected function dispatchEvent()
     {
         if (!$this->eventDispatcher) {
             return;
         }
         $log             = $this->getLastLog();
-        $event           = new ExecuteEvent();
+        $event           = new ExecutedEvent();
         $event->sql      = $log['sql'];
         $event->bindings = $log['bindings'];
         $event->time     = $log['time'];
@@ -348,7 +348,7 @@ abstract class AbstractConnection
         // 清扫
         $this->clear();
         // 调度执行事件
-        $this->dispatchExecuteEvent();
+        $this->dispatchEvent();
         // 返回
         return $success;
     }
