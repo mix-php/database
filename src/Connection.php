@@ -17,6 +17,26 @@ class Connection extends \Mix\Database\Persistent\Connection implements Connecti
     }
 
     /**
+     * 执行方法
+     * 当出现未知异常时，主动丢弃，使用户无法归还到池
+     * @param $name
+     * @param array $arguments
+     * @return mixed
+     * @throws \Throwable
+     */
+    protected function call($name, $arguments = [])
+    {
+        try {
+            return parent::call($name, $arguments);
+        } catch (\Throwable $e) {
+            // 丢弃连接
+            $this->discard();
+            // 抛出异常
+            throw $e;
+        }
+    }
+
+    /**
      * 释放连接
      * @return bool
      */
