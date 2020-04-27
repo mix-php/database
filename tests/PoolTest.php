@@ -24,7 +24,7 @@ final class PoolTest extends TestCase
                 $chan->pop();
             }
             $duration = time() - $time;
-            $_this->assertTrue($duration - 4 < 1);
+            $_this->assertTrue($duration - 4 < 1 && $duration - 4 >= 0);
         };
         run($func);
     }
