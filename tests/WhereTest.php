@@ -149,4 +149,27 @@ final class WhereTest extends TestCase
         run($func);
     }
 
+    // raw test
+    public function testExpression()
+    {
+        $_this = $this;
+        $func  = function () use ($_this) {
+            $db     = db();
+            $result = $db->table('users')->where([
+                ['id', '>', $db::raw('MOD(5,2)')],
+            ])->first();
+            $sql    = $db->getLastSql();
+            var_dump($sql);
+            $_this->assertTrue((bool)$result);
+
+            $result = $db->table('users')->where([
+                [$db::raw('CHAR_LENGTH(id)'), '=', 1],
+            ])->get();
+            $sql    = $db->getLastSql();
+            var_dump($sql);
+            $_this->assertTrue((bool)$result);
+        };
+        run($func);
+    }
+
 }
