@@ -268,6 +268,9 @@ abstract class AbstractConnection
         try {
             $this->build();
             $success = $this->statement->execute();
+            if ($success) {
+                $this->clear();
+            }
         } catch (\Throwable $ex) {
             $message = sprintf('%s %s in %s on line %s', $ex->getMessage(), get_class($ex), $ex->getFile(), $ex->getLine());
             $code    = $ex->getCode();
@@ -276,7 +279,6 @@ abstract class AbstractConnection
         } finally {
             $time               = round((static::microtime() - $microtime) * 1000, 2);
             $this->queryData[3] = $time;
-            $this->clear();
 
             $log = $this->getLastLog();
             $this->dispatch($log['sql'], $log['bindings'], $log['time'], $error ?? null);
