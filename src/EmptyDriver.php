@@ -11,7 +11,7 @@ class EmptyDriver
 
     protected $errorMessage = 'The connection has been returned to the pool, the current operation cannot be performed';
 
-    public function __construct(string $dsn = '', string $username = '', string $password = '', array $options = [])
+    public function __construct()
     {
     }
 
@@ -25,12 +25,12 @@ class EmptyDriver
         throw new \RuntimeException($this->errorMessage);
     }
 
-    public function connect(): void
+    public function connect()
     {
         throw new \RuntimeException($this->errorMessage);
     }
 
-    public function close(): void
+    public function close()
     {
         throw new \RuntimeException($this->errorMessage);
     }
