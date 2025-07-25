@@ -11,12 +11,12 @@ class Connection extends AbstractConnection
 
     protected $exceptional = false;
 
-    public function queryOne(int $fetchStyle = null)
+    public function queryOne(?int $fetchStyle = null)
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
-    public function queryAll(int $fetchStyle = null): array
+    public function queryAll(?int $fetchStyle = null): array
     {
         return $this->call(__FUNCTION__, func_get_args());
     }

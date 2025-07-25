@@ -453,7 +453,7 @@ abstract class AbstractConnection implements ConnectionInterface
      * @param int $fetchStyle
      * @return array|object|false
      */
-    public function queryOne(int $fetchStyle = null)
+    public function queryOne(?int $fetchStyle = null)
     {
         $fetchStyle = $fetchStyle ?: $this->options[\PDO::ATTR_DEFAULT_FETCH_MODE];
         return $this->statement->fetch($fetchStyle);
@@ -464,7 +464,7 @@ abstract class AbstractConnection implements ConnectionInterface
      * @param int $fetchStyle
      * @return array
      */
-    public function queryAll(int $fetchStyle = null): array
+    public function queryAll(?int $fetchStyle = null): array
     {
         $fetchStyle = $fetchStyle ?: $this->options[\PDO::ATTR_DEFAULT_FETCH_MODE];
         return $this->statement->fetchAll($fetchStyle);
